@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getToken } from "@/utils/token";
+import { getToken, removeToken } from "@/utils/token";
 
 const API_URL = "http://localhost:8000";
 

@@ -15,18 +15,19 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { authService } from "@/services/auth.service";
 import { useState } from "react";
+import type { AuthRequest } from "@/types/api";
 
 const formSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-});
+}) satisfies z.ZodType<AuthRequest>;
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<AuthRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
@@ -34,7 +35,7 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: AuthRequest) => {
     try {
       setIsLoading(true);
       const response = await authService.login(values);

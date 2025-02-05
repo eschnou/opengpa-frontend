@@ -3,37 +3,57 @@ import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { httpClient } from "@/lib/http-client";
+import { TaskStepDTO } from "@/types/api";
 
-const DUMMY_MESSAGES = [
-  { id: 1, role: "user", content: "Can you help me analyze this code?" },
-  { id: 2, role: "assistant", content: "Of course! Please share the code you'd like me to analyze." },
-  { id: 3, role: "user", content: "Here's a React component I'm working on..." },
-  {
-    id: 4,
-    role: "assistant",
-    content: "I've reviewed your React component. Here are my observations and suggestions for improvement...",
-  },
-];
+const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
+  console.log("Fetching steps for task:", taskId);
+  const response = await httpClient.get(`/api/tasks/${taskId}/steps`);
+  console.log("Steps fetched:", response.data);
+  return response.data;
+};
 
-export const ChatArea = () => {
+interface ChatAreaProps {
+  taskId?: string;
+}
+
+export const ChatArea = ({ taskId }: ChatAreaProps) => {
   const [message, setMessage] = useState("");
+
+  const { data: steps, isLoading } = useQuery({
+    queryKey: ["taskSteps", taskId],
+    queryFn: () => fetchTaskSteps(taskId!),
+    enabled: !!taskId,
+  });
 
   return (
     <main className="fixed left-64 top-16 right-0 bottom-0 bg-background overflow-hidden flex flex-col">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {DUMMY_MESSAGES.map((msg) => (
-          <div
-            key={msg.id}
-            className={cn(
-              "max-w-[80%] p-4 rounded-lg",
-              msg.role === "user"
-                ? "ml-auto bg-primary text-primary-foreground"
-                : "bg-muted"
-            )}
-          >
-            {msg.content}
+        {!taskId ? (
+          <div className="text-center text-muted-foreground p-4">
+            Select a task to view the conversation
           </div>
-        ))}
+        ) : isLoading ? (
+          <div className="text-center text-muted-foreground p-4">
+            Loading conversation...
+          </div>
+        ) : steps?.length === 0 ? (
+          <div className="text-center text-muted-foreground p-4">
+            No messages yet
+          </div>
+        ) : (
+          steps?.map((step) => (
+            <div key={step.id} className="space-y-4">
+              <div className="max-w-[80%] p-4 rounded-lg bg-muted">
+                {step.input}
+              </div>
+              <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
+                {step.result.summary}
+              </div>
+            </div>
+          ))
+        )}
       </div>
       
       <div className="p-4 border-t border-border">

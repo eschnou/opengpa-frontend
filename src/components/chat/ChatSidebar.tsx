@@ -15,7 +15,12 @@ const fetchTasks = async (): Promise<TaskDTO[]> => {
   return response.data;
 };
 
-export const ChatSidebar = () => {
+interface ChatSidebarProps {
+  onTaskSelect: (taskId: string) => void;
+  selectedTaskId?: string;
+}
+
+export const ChatSidebar = ({ onTaskSelect, selectedTaskId }: ChatSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -47,7 +52,11 @@ export const ChatSidebar = () => {
           tasks?.map((task) => (
             <button
               key={task.id}
-              className="w-full p-3 hover:bg-muted flex items-center gap-3 transition-colors"
+              className={cn(
+                "w-full p-3 hover:bg-muted flex items-center gap-3 transition-colors",
+                selectedTaskId === task.id && "bg-muted"
+              )}
+              onClick={() => onTaskSelect(task.id)}
             >
               <MessageSquare className="h-5 w-5 shrink-0" />
               {!collapsed && (

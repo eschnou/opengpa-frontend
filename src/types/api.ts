@@ -23,3 +23,14 @@ export interface TaskDTO {
   completed: string | null;
   context: Record<string, string>;
 }
+
+export interface TaskStepDTO {
+  id: string;
+  taskId: string;
+  input: string;
+  result: {
+    summary: string;
+    [key: string]: any;
+  };
+  created: string;
+}

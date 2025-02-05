@@ -43,29 +43,20 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
             No messages yet
           </div>
         ) : (
-          <>
-            {/* Display task input first */}
-            {steps?.[0]?.input && steps[0].input !== "string" && (
-              <div className="max-w-[80%] p-4 rounded-lg bg-muted">
-                {steps[0].input}
-              </div>
-            )}
-            {/* Then display the conversation */}
-            {steps?.map((step, index) => (
-              <div key={step.id} className="space-y-4">
-                {index > 0 && step.input && step.input !== "string" && (
-                  <div className="max-w-[80%] p-4 rounded-lg bg-muted">
-                    {step.input}
-                  </div>
-                )}
-                {step.result?.summary && (
-                  <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
-                    {step.result.summary}
-                  </div>
-                )}
-              </div>
-            ))}
-          </>
+          steps?.map((step) => (
+            <div key={step.id} className="space-y-4">
+              {step.input && (
+                <div className="max-w-[80%] p-4 rounded-lg bg-muted">
+                  {step.input}
+                </div>
+              )}
+              {step.result?.summary && (
+                <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
+                  {step.result.summary}
+                </div>
+              )}
+            </div>
+          ))
         )}
       </div>
       

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChatArea } from "@/components/chat/ChatArea";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 
-export const Index = () => {
+const Index = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<string>();
 
   return (
@@ -12,3 +12,5 @@ export const Index = () => {
     </>
   );
 };
+
+export default Index;

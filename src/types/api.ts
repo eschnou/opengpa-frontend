@@ -14,3 +14,12 @@ export interface UserProfileDTO {
   name: string;
   email: string;
 }
+
+export interface TaskDTO {
+  id: string;
+  title: string;
+  description: string;
+  created: string;
+  completed: string | null;
+  context: Record<string, string>;
+}

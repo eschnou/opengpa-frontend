@@ -2,15 +2,21 @@ import { useState } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/http-client";
-import { TaskStepDTO } from "@/types/api";
+import { TaskStepDTO, TaskDTO } from "@/types/api";
 
 const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
   console.log("Fetching steps for task:", taskId);
   const response = await httpClient.get(`/api/tasks/${taskId}/steps`);
   console.log("Steps fetched:", response.data);
+  return response.data;
+};
+
+const fetchTask = async (taskId: string): Promise<TaskDTO> => {
+  console.log("Fetching task:", taskId);
+  const response = await httpClient.get(`/api/tasks/${taskId}`);
+  console.log("Task fetched:", response.data);
   return response.data;
 };
 
@@ -20,6 +26,12 @@ interface ChatAreaProps {
 
 export const ChatArea = ({ taskId }: ChatAreaProps) => {
   const [message, setMessage] = useState("");
+
+  const { data: task } = useQuery({
+    queryKey: ["task", taskId],
+    queryFn: () => fetchTask(taskId!),
+    enabled: !!taskId,
+  });
 
   const { data: steps, isLoading } = useQuery({
     queryKey: ["taskSteps", taskId],
@@ -38,25 +50,28 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
           <div className="text-center text-muted-foreground p-4">
             Loading conversation...
           </div>
-        ) : steps?.length === 0 ? (
-          <div className="text-center text-muted-foreground p-4">
-            No messages yet
-          </div>
         ) : (
-          steps?.map((step) => (
-            <div key={step.id} className="space-y-4">
-              {step.input && (
-                <div className="max-w-[80%] p-4 rounded-lg bg-muted">
-                  {step.input}
-                </div>
-              )}
-              {step.result?.summary && (
-                <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
-                  {step.result.summary}
-                </div>
-              )}
-            </div>
-          ))
+          <>
+            {task?.context?.input && (
+              <div className="max-w-[80%] p-4 rounded-lg bg-muted">
+                {task.context.input}
+              </div>
+            )}
+            {steps?.map((step) => (
+              <div key={step.id} className="space-y-4">
+                {step.input && step.input !== "string" && (
+                  <div className="max-w-[80%] p-4 rounded-lg bg-muted">
+                    {step.input}
+                  </div>
+                )}
+                {step.result?.summary && (
+                  <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
+                    {step.result.summary}
+                  </div>
+                )}
+              </div>
+            ))}
+          </>
         )}
       </div>
       

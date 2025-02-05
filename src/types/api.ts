@@ -22,7 +22,6 @@ export interface TaskDTO {
   created: string;
   completed: string | null;
   context: Record<string, string>;
-  input: string;
 }
 
 export interface TaskStepDTO {

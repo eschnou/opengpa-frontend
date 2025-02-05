@@ -53,10 +53,15 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
           </div>
         ) : (
           <>
-            {/* Display task input first */}
-            {task?.input && (
+            {/* Display task title and description first */}
+            {task && (
               <div className="max-w-[80%] p-4 rounded-lg bg-muted">
-                {task.input}
+                <div className="font-medium">{task.title}</div>
+                {task.description && (
+                  <div className="mt-2 text-sm text-muted-foreground">
+                    {task.description}
+                  </div>
+                )}
               </div>
             )}
             

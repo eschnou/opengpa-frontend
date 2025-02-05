@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/http-client";
 import { TaskDTO } from "@/types/api";
-import { format } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 
 const fetchTasks = async (): Promise<TaskDTO[]> => {
   console.log("Fetching tasks...");
@@ -63,7 +63,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId }: ChatSidebarProps) 
                 <div className="text-left truncate">
                   <p className="truncate">{task.title || "Untitled Task"}</p>
                   <p className="text-xs text-muted-foreground">
-                    {task.created ? format(new Date(task.created), "yyyy-MM-dd") : "No date"}
+                    {task.created ? formatDistanceToNow(new Date(task.created), { addSuffix: true }) : "No date"}
                   </p>
                 </div>
               )}

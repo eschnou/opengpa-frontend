@@ -1,7 +1,23 @@
 import { Settings, FileText, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { authService } from "@/services/auth.service";
+import { useToast } from "@/hooks/use-toast";
 
 export const TopNav = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    console.log("Logging out user...");
+    authService.logout();
+    toast({
+      title: "Logged out successfully",
+      description: "You have been logged out of your account",
+    });
+    navigate("/login");
+  };
+
   return (
     <nav className="glass fixed top-0 left-0 right-0 h-16 px-4 flex items-center justify-between z-50">
       <div className="flex items-center gap-2">
@@ -15,7 +31,7 @@ export const TopNav = () => {
         <Button variant="ghost" size="icon">
           <Settings className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" onClick={handleLogout}>
           <LogOut className="h-5 w-5" />
         </Button>
       </div>

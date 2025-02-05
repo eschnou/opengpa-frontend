@@ -13,6 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { authService } from "@/services/auth.service";
+import { useState } from "react";
 
 const formSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -22,6 +24,7 @@ const formSchema = z.object({
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,13 +35,24 @@ const Login = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("Login attempt with:", values);
-    // For now, just show a success message and redirect
-    toast({
-      title: "Login successful!",
-      description: "Welcome back " + values.username,
-    });
-    navigate("/");
+    try {
+      setIsLoading(true);
+      const response = await authService.login(values);
+      toast({
+        title: "Login successful!",
+        description: `Welcome back ${response.user.name || response.user.username}`,
+      });
+      navigate("/");
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: "Login failed",
+        description: "Invalid username or password",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,8 +104,8 @@ const Login = () => {
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Sign in
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
         </Form>

@@ -45,12 +45,16 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
         ) : (
           steps?.map((step) => (
             <div key={step.id} className="space-y-4">
-              <div className="max-w-[80%] p-4 rounded-lg bg-muted">
-                {step.input}
-              </div>
-              <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
-                {step.result.summary}
-              </div>
+              {step.input && (
+                <div className="max-w-[80%] p-4 rounded-lg bg-muted">
+                  {step.input}
+                </div>
+              )}
+              {step.result?.summary && (
+                <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
+                  {step.result.summary}
+                </div>
+              )}
             </div>
           ))
         )}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronLeft, MessageSquare, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 const DUMMY_CHATS = [
   { id: 1, title: "Project Planning Assistant", date: "2024-02-20" },
@@ -12,7 +13,7 @@ const DUMMY_CHATS = [
 
 export const ChatSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [isDark, setIsDark] = useState(true);
+  const { theme, setTheme } = useTheme();
 
   return (
     <aside
@@ -50,9 +51,9 @@ export const ChatSidebar = () => {
           variant="ghost"
           size="icon"
           className="w-full h-10"
-          onClick={() => setIsDark(!isDark)}
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
       </div>
     </aside>

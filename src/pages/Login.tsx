@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { authService } from "@/services/auth.service";
 import { useState } from "react";
 import type { AuthRequest } from "@/types/api";
@@ -20,10 +20,10 @@ import type { AuthRequest } from "@/types/api";
 const formSchema = z.object({
   username: z.string({
     required_error: "Username is required",
-  }).min(3, "Username must be at least 3 characters"),
+  }).min(3, "Username must be at least 3 characters").nonempty(),
   password: z.string({
     required_error: "Password is required",
-  }).min(6, "Password must be at least 6 characters"),
+  }).min(6, "Password must be at least 6 characters").nonempty(),
 }) satisfies z.ZodType<AuthRequest>;
 
 const Login = () => {

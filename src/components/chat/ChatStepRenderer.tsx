@@ -17,7 +17,7 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
   // Handle different result types
   if (step.result) {
     // Special handling for output_message action
-    if (step.result.action === "output_message" && step.result.details) {
+    if (step.action?.name === "output_message" && step.result.details) {
       return (
         <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
           {step.result.details}

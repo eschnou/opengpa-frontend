@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 const DUMMY_MESSAGES = [
   { id: 1, role: "user", content: "Can you help me analyze this code?" },

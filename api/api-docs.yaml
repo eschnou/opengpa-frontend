@@ -1,0 +1,620 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8000
+  description: Generated server url
+security:
+- bearer-jwt: []
+paths:
+  /users/me/password:
+    put:
+      tags:
+      - user-controller
+      operationId: changePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /auth/register:
+    post:
+      tags:
+      - auth-controller
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+  /auth/login:
+    post:
+      tags:
+      - auth-controller
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+  /api/tasks:
+    get:
+      tags:
+      - tasks-controller
+      operationId: listTasks
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskDTO"
+    post:
+      tags:
+      - tasks-controller
+      operationId: newTask
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - prompt
+              type: object
+              properties:
+                prompt:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TaskDTO"
+  /api/tasks/{task_id}:
+    get:
+      tags:
+      - tasks-controller
+      operationId: getTask
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TaskDTO"
+    post:
+      tags:
+      - tasks-controller
+      operationId: progressTask
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InputDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StepDTO"
+  /api/tasks/{task_id}/documents:
+    post:
+      tags:
+      - tasks-controller
+      operationId: uploadDocumentToWorkspace
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Document"
+  /api/documents:
+    get:
+      tags:
+      - document-controller
+      operationId: listDocuments
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RagDocumentDTO"
+    post:
+      tags:
+      - document-controller
+      operationId: ingestDocument
+      parameters:
+      - name: title
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: description
+        in: query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /users/me:
+    get:
+      tags:
+      - user-controller
+      operationId: getCurrentUserProfile
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserProfileDTO"
+    patch:
+      tags:
+      - user-controller
+      operationId: updateProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfileDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserProfileDTO"
+  /auth/test:
+    get:
+      tags:
+      - test-controller
+      operationId: test
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /auth/test/patterns:
+    get:
+      tags:
+      - test-controller
+      operationId: patterns
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/tasks/{task_id}/steps:
+    get:
+      tags:
+      - tasks-controller
+      operationId: listSteps
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StepDTO"
+  /api/tasks/{task_id}/documents/{document_id}:
+    get:
+      tags:
+      - tasks-controller
+      operationId: downloadAgentTaskArtifact
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/files/{task_id}/documents/{document_id}:
+    get:
+      tags:
+      - files-controller
+      operationId: downloadAgentTaskArtifact_1
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: document_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/documents/{documentId}:
+    get:
+      tags:
+      - document-controller
+      operationId: getDocument
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RagDocumentDTO"
+    delete:
+      tags:
+      - document-controller
+      operationId: deleteDocument
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/documents/{documentId}/chunks:
+    get:
+      tags:
+      - document-controller
+      operationId: getChuinks
+      parameters:
+      - name: documentId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RagChunkDTO"
+  /api/chunks/{chunkId}:
+    get:
+      tags:
+      - chunks-controller
+      operationId: getDocument_1
+      parameters:
+      - name: chunkId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RagChunkDTO"
+  /:
+    get:
+      tags:
+      - root-controller
+      operationId: root
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+components:
+  schemas:
+    ChangePasswordDTO:
+      required:
+      - currentPassword
+      - newPassword
+      type: object
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          maxLength: 2147483647
+          minLength: 8
+          type: string
+    RegisterRequest:
+      required:
+      - email
+      - name
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          maxLength: 50
+          minLength: 3
+          pattern: "^[a-zA-Z0-9._-]+$"
+          type: string
+        name:
+          maxLength: 100
+          minLength: 0
+          pattern: "^[\\p{L}\\s'-]+$"
+          type: string
+        email:
+          maxLength: 255
+          minLength: 0
+          pattern: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+          type: string
+        password:
+          maxLength: 2147483647
+          minLength: 8
+          type: string
+        inviteCode:
+          type: string
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/UserProfileDTO"
+    UserProfileDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+    AuthRequest:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    TaskDTO:
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+        completed:
+          type: string
+          format: date-time
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        context:
+          type: object
+          additionalProperties:
+            type: string
+    InputDTO:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+    ActionDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        reasoning:
+          type: string
+        final:
+          type: boolean
+    DocumentDTO:
+      type: object
+      properties:
+        taskId:
+          type: string
+        filename:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    ResultDTO:
+      type: object
+      properties:
+        status:
+          type: string
+        details:
+          type: object
+        summary:
+          type: string
+        error:
+          type: string
+        message:
+          type: string
+    StepDTO:
+      type: object
+      properties:
+        input:
+          type: string
+        action:
+          $ref: "#/components/schemas/ActionDTO"
+        result:
+          $ref: "#/components/schemas/ResultDTO"
+        documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentDTO"
+    Document:
+      type: object
+      properties:
+        workspaceId:
+          type: string
+        name:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    UpdateUserProfileDTO:
+      type: object
+      properties:
+        name:
+          maxLength: 100
+          minLength: 0
+          type: string
+        email:
+          type: string
+    RagDocumentDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        filename:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        contentType:
+          type: string
+        progress:
+          type: number
+          format: float
+    RagChunkDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        documentId:
+          type: string
+        documentTitle:
+          type: string
+        documentDescription:
+          type: string
+        content:
+          type: string
+  securitySchemes:
+    bearer-jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

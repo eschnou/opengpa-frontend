@@ -25,12 +25,21 @@ export interface TaskDTO {
   request: string;
 }
 
+export interface ActionDTO {
+  name: string;
+  parameters?: Record<string, string>;
+  reasoning?: string;
+  final?: boolean;
+}
+
 export interface TaskStepDTO {
   id: string;
   taskId: string;
   input: string;
+  action?: ActionDTO;
   result: {
     summary: string;
+    details?: any;
     [key: string]: any;
   };
   created: string;

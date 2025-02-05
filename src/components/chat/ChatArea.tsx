@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/http-client";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
+import { ChatStepRenderer } from "./ChatStepRenderer";
 
 const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
   console.log("Fetching steps for task:", taskId);
@@ -63,16 +63,7 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
             {/* Then display the conversation steps */}
             {steps?.map((step) => (
               <div key={step.id} className="space-y-4">
-                {step.input && step.input !== "string" && (
-                  <div className="max-w-[80%] p-4 rounded-lg bg-muted">
-                    {step.input}
-                  </div>
-                )}
-                {step.result?.summary && (
-                  <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
-                    {step.result.summary}
-                  </div>
-                )}
+                <ChatStepRenderer step={step} />
               </div>
             ))}
           </>

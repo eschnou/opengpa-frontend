@@ -24,7 +24,7 @@ const formSchema = z.object({
   password: z.string({
     required_error: "Password is required",
   }).min(6, "Password must be at least 6 characters").nonempty(),
-}) satisfies z.ZodType<AuthRequest>;
+}) as z.ZodType<AuthRequest>;
 
 const Login = () => {
   const navigate = useNavigate();

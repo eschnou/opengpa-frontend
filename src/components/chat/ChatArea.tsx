@@ -65,10 +65,10 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
         onTaskCreated(newTask.id);
       }
 
-      // Progress the task up to 10 times
+      // Progress the task up to 5 times or until we get a final result
       let currentStep: TaskStepDTO | undefined;
       let attempts = 0;
-      const MAX_ATTEMPTS = 10;
+      const MAX_ATTEMPTS = 5;
 
       while (attempts < MAX_ATTEMPTS) {
         currentStep = await progressTask(newTask.id, message);
@@ -77,8 +77,9 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
         // Refresh the steps query to update the UI
         await queryClient.invalidateQueries({ queryKey: ["taskSteps", newTask.id] });
         
-        if (currentStep.result?.final) {
-          console.log("Task completed successfully");
+        // Check if this step is marked as final
+        if (currentStep.action?.final || currentStep.result?.final) {
+          console.log("Task completed with final step");
           break;
         }
         attempts++;

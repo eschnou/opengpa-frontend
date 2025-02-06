@@ -74,7 +74,7 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
     }
 
     return (
-      <div className="relative rounded-lg overflow-hidden bg-primary/10 border border-primary/20">
+      <pre className={`relative mt-4 rounded-lg bg-primary/10 border border-primary/20 ${className}`}>
         {language && (
           <div className="absolute top-0 left-0 px-3 py-1 text-sm text-primary bg-primary/20 rounded-br-lg">
             {language}
@@ -94,10 +94,10 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
             )}
           </Button>
         </div>
-        <pre className={`${className} p-4 pt-10 overflow-x-auto`}>
-          <code {...props}>{children}</code>
-        </pre>
-      </div>
+        <code className="block p-4 pt-10 overflow-x-auto" {...props}>
+          {children}
+        </code>
+      </pre>
     );
   };
 

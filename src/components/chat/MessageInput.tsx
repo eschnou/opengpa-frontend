@@ -142,7 +142,7 @@ export const MessageInput = ({
             </Button>
           </div>
         )}
-        <div className="flex gap-2 items-end">
+        <div className="flex gap-2 items-start">
           <div className="flex gap-1.5">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -151,7 +151,7 @@ export const MessageInput = ({
                   size="icon"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isProcessing}
-                  className="hover:bg-muted"
+                  className="hover:bg-muted h-[44px] w-[44px]"
                 >
                   <Paperclip className="h-5 w-5" />
                 </Button>
@@ -165,7 +165,7 @@ export const MessageInput = ({
                   size="icon"
                   onClick={handleScreenshot}
                   disabled={isProcessing}
-                  className="hover:bg-muted"
+                  className="hover:bg-muted h-[44px] w-[44px]"
                 >
                   <Camera className="h-5 w-5" />
                 </Button>

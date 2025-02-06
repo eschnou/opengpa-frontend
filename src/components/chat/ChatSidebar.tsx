@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, MessageSquare, Sun, Moon } from "lucide-react";
+import { ChevronLeft, MessageSquare, Sun, Moon, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -18,9 +18,10 @@ const fetchTasks = async (): Promise<TaskDTO[]> => {
 interface ChatSidebarProps {
   onTaskSelect: (taskId: string) => void;
   selectedTaskId?: string;
+  onNewChat?: () => void;
 }
 
-export const ChatSidebar = ({ onTaskSelect, selectedTaskId }: ChatSidebarProps) => {
+export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -38,9 +39,19 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId }: ChatSidebarProps) 
     >
       <div className="flex items-center justify-between p-4">
         <span className={cn("font-semibold", collapsed && "hidden")}>Tasks</span>
-        <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)}>
-          <ChevronLeft className={cn("h-5 w-5 transition-transform", collapsed && "rotate-180")} />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onNewChat}
+            className="hover:bg-muted"
+          >
+            <PlusCircle className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)}>
+            <ChevronLeft className={cn("h-5 w-5 transition-transform", collapsed && "rotate-180")} />
+          </Button>
+        </div>
       </div>
       
       <div className="flex-1 overflow-y-auto scrollbar-hidden">

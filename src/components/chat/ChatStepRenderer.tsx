@@ -1,9 +1,10 @@
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Copy, RotateCcw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { httpClient } from "@/lib/http-client";
 import ReactMarkdown from 'react-markdown';
+import { useState } from "react";
 
 interface ChatStepRendererProps {
   step: TaskStepDTO;
@@ -11,6 +12,7 @@ interface ChatStepRendererProps {
 
 export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
   const { toast } = useToast();
+  const [copiedBlockIndex, setCopiedBlockIndex] = useState<number | null>(null);
 
   const handleDownload = async (taskId: string, documentId: string, filename: string) => {
     console.log("Downloading document:", documentId, "from task:", taskId);
@@ -19,15 +21,10 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
         responseType: 'blob'
       });
       
-      // Create a URL for the blob
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      
-      // Create a temporary link element
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', filename);
-      
-      // Append to body, click, and clean up
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
@@ -47,6 +44,64 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
     }
   };
 
+  const copyToClipboard = async (text: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedBlockIndex(index);
+      toast({
+        title: "Copied to clipboard",
+        description: "Code has been copied to your clipboard",
+      });
+      // Reset the copied state after 2 seconds
+      setTimeout(() => setCopiedBlockIndex(null), 2000);
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy text to clipboard",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Custom renderer for code blocks
+  const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
+    const match = /language-(\w+)/.exec(className || '');
+    const language = match ? match[1] : '';
+    const codeString = String(children).replace(/\n$/, '');
+    const blockIndex = node.position?.start.line || 0;
+
+    if (inline) {
+      return <code className={className} {...props}>{children}</code>;
+    }
+
+    return (
+      <div className="relative my-4">
+        {language && (
+          <div className="absolute top-0 right-0 px-3 py-1 text-sm text-muted-foreground bg-muted rounded-tr-lg">
+            {language}
+          </div>
+        )}
+        <div className="absolute top-2 right-2 z-10">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => copyToClipboard(codeString, blockIndex)}
+            className="h-8 w-8 p-0"
+          >
+            {copiedBlockIndex === blockIndex ? (
+              <RotateCcw className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+        <pre className={`${className} mt-6 p-4 rounded-lg bg-muted overflow-x-auto`}>
+          <code {...props}>{children}</code>
+        </pre>
+      </div>
+    );
+  };
+
   return (
     <>
       {/* Show user input if present */}
@@ -59,7 +114,11 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
       {/* Handle output_message actions */}
       {step.action?.name === "output_message" ? (
         <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground prose prose-invert">
-          <ReactMarkdown>
+          <ReactMarkdown
+            components={{
+              code: CodeBlock
+            }}
+          >
             {step.action.parameters?.message || step.result?.details || ''}
           </ReactMarkdown>
         </div>

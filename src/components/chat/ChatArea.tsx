@@ -63,6 +63,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
 
     setIsProcessing(true);
     setShouldStopProcessing(false);
+    
     try {
       console.log("Starting to create task...");
       
@@ -81,7 +82,12 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       let attempts = 0;
       const MAX_ATTEMPTS = 5;
 
-      while (attempts < MAX_ATTEMPTS && !shouldStopProcessing) {
+      while (!shouldStopProcessing && attempts < MAX_ATTEMPTS) {
+        if (shouldStopProcessing) {
+          console.log("Breaking task progression loop - stop requested");
+          break;
+        }
+
         currentStep = await progressTask(newTask.id);
         console.log(`Task progress attempt ${attempts + 1}:`, currentStep);
         

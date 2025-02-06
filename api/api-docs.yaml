@@ -503,6 +503,8 @@ components:
           type: string
         description:
           type: string
+        request:
+          type: string
         context:
           type: object
           additionalProperties:

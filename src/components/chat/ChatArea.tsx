@@ -68,8 +68,12 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
 
     setIsProcessing(true);
     try {
+      console.log("Starting to create task...");
+      
       // Create new task with optional file
       const newTask = await createTask(message, selectedFile || undefined);
+      console.log("Task created successfully:", newTask);
+      
       if (onTaskCreated) {
         onTaskCreated(newTask.id);
       }
@@ -81,10 +85,13 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
 
       while (attempts < MAX_ATTEMPTS) {
         currentStep = await progressTask(newTask.id, message);
+        console.log(`Task progress attempt ${attempts + 1}:`, currentStep);
+        
         // Refresh the steps query to update the UI
         await queryClient.invalidateQueries({ queryKey: ["taskSteps", newTask.id] });
         
         if (currentStep.result?.final) {
+          console.log("Task completed successfully");
           break;
         }
         attempts++;

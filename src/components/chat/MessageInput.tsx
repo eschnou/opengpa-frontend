@@ -117,7 +117,7 @@ export const MessageInput = ({
 
   return (
     <div className={className}>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {attachedFile && (
           <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-md">
             <Paperclip className="h-4 w-4" />
@@ -132,86 +132,86 @@ export const MessageInput = ({
             </Button>
           </div>
         )}
-        
-        <div className="relative">
-          <Textarea
-            value={message}
-            onChange={(e) => onMessageChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            className="resize-none pr-12 min-h-[120px] max-h-[400px] text-base"
-            rows={1}
-            disabled={isProcessing}
-          />
-          <div className="absolute right-2 bottom-2">
-            {isProcessing && onStopProcessing ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="destructive"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={onStopProcessing}
-                  >
-                    <Square className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Stop processing</TooltipContent>
-              </Tooltip>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => onSendMessage()}
-                    disabled={isProcessing || !message.trim()}
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Send message</TooltipContent>
-              </Tooltip>
-            )}
+        <div className="flex gap-2 items-end">
+          <div className="flex gap-1.5">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isProcessing}
+                  className="hover:bg-muted"
+                >
+                  <Paperclip className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Attach file</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleScreenshot}
+                  disabled={isProcessing}
+                  className="hover:bg-muted"
+                >
+                  <Camera className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Take screenshot</TooltipContent>
+            </Tooltip>
           </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isProcessing}
-                className="hover:bg-muted"
-              >
-                <Paperclip className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Attach file</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon"
-                onClick={handleScreenshot}
-                disabled={isProcessing}
-                className="hover:bg-muted"
-              >
-                <Camera className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Take screenshot</TooltipContent>
-          </Tooltip>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept=".pdf,.doc,.docx,.txt"
-          />
+          <div className="flex-1 relative">
+            <Textarea
+              value={message}
+              onChange={(e) => onMessageChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your message..."
+              className="resize-none pr-12 min-h-[44px] max-h-32"
+              rows={1}
+              disabled={isProcessing}
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept=".pdf,.doc,.docx,.txt"
+            />
+            <div className="absolute right-2 bottom-1.5">
+              {isProcessing && onStopProcessing ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="destructive"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={onStopProcessing}
+                    >
+                      <Square className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Stop processing</TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onSendMessage()}
+                      disabled={isProcessing || !message.trim()}
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Send message</TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

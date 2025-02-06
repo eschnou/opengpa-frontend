@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { httpClient } from "@/lib/http-client";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
 import { ChatStepRenderer } from "./ChatStepRenderer";
+import { LoadingIndicator } from "./LoadingIndicator";
 import chatExamples from "@/config/chat-examples.json";
 import { createTask, progressTask } from "@/services/task.service";
 import { useToast } from "@/components/ui/use-toast";
@@ -164,6 +165,8 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
                 <ChatStepRenderer step={step} />
               </div>
             ))}
+
+            {isProcessing && <LoadingIndicator />}
           </>
         )}
       </div>

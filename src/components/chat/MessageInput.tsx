@@ -56,10 +56,10 @@ export const MessageInput = ({
     if (file && onFileAttach) {
       // Check file type
       const fileType = file.name.split('.').pop()?.toLowerCase();
-      if (!['txt', 'csv'].includes(fileType || '')) {
+      if (!['txt', 'csv', 'jpg', 'jpeg', 'png', 'pdf'].includes(fileType || '')) {
         toast({
           title: "Invalid file type",
-          description: "Only .txt and .csv files are allowed",
+          description: "Only .txt, .csv, .jpg, .png and .pdf files are allowed",
           variant: "destructive",
         });
         // Reset file input
@@ -171,7 +171,7 @@ export const MessageInput = ({
                   <Paperclip className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Attach .txt or .csv file</TooltipContent>
+              <TooltipContent>Attach .txt, .csv, .jpg, .png or .pdf file</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -204,7 +204,7 @@ export const MessageInput = ({
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
-              accept=".txt,.csv"
+              accept=".txt,.csv,.jpg,.jpeg,.png,.pdf"
             />
             <div className="absolute right-2 bottom-1.5">
               {isProcessing && onStopProcessing ? (

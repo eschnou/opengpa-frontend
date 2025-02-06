@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
-import chatExamples from "@/config/chat-examples.json";
 import { MessageInput } from "./MessageInput";
+import chatExamples from "@/config/chat-examples.json";
 
 interface WelcomeChatProps {
   message: string;
@@ -24,23 +23,30 @@ export const WelcomeChat = ({
 }: WelcomeChatProps) => {
   return (
     <main className="fixed left-64 top-16 right-0 bottom-0 bg-background overflow-hidden flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-6">
-        <h2 className="text-2xl font-semibold text-foreground">Welcome to Chat</h2>
-        <div className="max-w-md space-y-4 text-center">
-          <p className="text-muted-foreground">Here are some examples of what you can ask:</p>
-          <ul className="space-y-3 text-sm">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-8 max-w-3xl mx-auto w-full">
+        <h2 className="text-4xl font-bold text-foreground">Welcome to Chat</h2>
+        <div className="w-full space-y-6">
+          <p className="text-xl text-muted-foreground text-center">
+            Here are some examples of what you can ask:
+          </p>
+          <div className="space-y-4 w-full">
             {chatExamples.examples.map((example, index) => (
-              <li 
-                key={index} 
-                className="p-3 bg-muted rounded-lg cursor-pointer hover:bg-accent transition-colors"
+              <button
+                key={index}
                 onClick={() => onExampleClick(example.body)}
+                className="w-full p-4 bg-muted hover:bg-accent transition-colors rounded-xl text-left group relative"
               >
-                "{example.title}"
-              </li>
+                <span className="text-lg font-medium text-foreground">
+                  "{example.title}"
+                </span>
+                <div className="mt-2 text-sm text-muted-foreground line-clamp-2 group-hover:line-clamp-none transition-all">
+                  {example.body}
+                </div>
+              </button>
             ))}
-          </ul>
+          </div>
         </div>
-        <div className="w-full max-w-md space-y-4">
+        <div className="w-full max-w-2xl">
           <MessageInput
             message={message}
             isProcessing={isProcessing}

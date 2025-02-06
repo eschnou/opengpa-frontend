@@ -49,8 +49,8 @@ export const MessageInput = ({
 
   const handleScreenshot = async () => {
     try {
-      // Request screen capture
-      const stream = await navigator.mediaDevices.getDisplayMedia({ preferCurrentTab: true });
+      // Request screen capture with standard options
+      const stream = await navigator.mediaDevices.getDisplayMedia();
       
       // Create video element to capture the stream
       const video = document.createElement('video');

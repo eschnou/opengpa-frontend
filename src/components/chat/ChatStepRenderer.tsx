@@ -74,18 +74,18 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
     }
 
     return (
-      <div className="relative my-4">
+      <div className="relative rounded-lg overflow-hidden bg-primary/10 border border-primary/20">
         {language && (
-          <div className="absolute top-0 left-0 px-3 py-1 text-sm text-muted-foreground bg-secondary/50 rounded-tl-lg mt-6">
+          <div className="absolute top-0 left-0 px-3 py-1 text-sm text-primary bg-primary/20 rounded-br-lg">
             {language}
           </div>
         )}
-        <div className="absolute top-2 right-2 z-10">
+        <div className="absolute top-2 right-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => copyToClipboard(codeString, blockIndex)}
-            className="h-8 w-8 p-0 hover:bg-secondary/50"
+            className="h-8 w-8 p-0 hover:bg-primary/20"
           >
             {copiedBlockIndex === blockIndex ? (
               <RotateCcw className="h-4 w-4" />
@@ -94,7 +94,7 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
             )}
           </Button>
         </div>
-        <pre className={`${className} p-4 pt-12 rounded-lg bg-secondary/25 text-secondary-foreground overflow-x-auto border border-secondary/20`}>
+        <pre className={`${className} p-4 pt-10 overflow-x-auto`}>
           <code {...props}>{children}</code>
         </pre>
       </div>

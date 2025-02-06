@@ -1,7 +1,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send, Square, Paperclip, Camera, X } from "lucide-react";
-import { KeyboardEvent, useRef } from "react";
+import { KeyboardEvent, useRef, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import {
   Tooltip,
@@ -31,6 +31,16 @@ export const MessageInput = ({
   onFileAttach
 }: MessageInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea as content changes
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [message]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -165,11 +175,12 @@ export const MessageInput = ({
           </div>
           <div className="flex-1 relative">
             <Textarea
+              ref={textareaRef}
               value={message}
               onChange={(e) => onMessageChange(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type your message..."
-              className="resize-none pr-12 min-h-[44px] max-h-32"
+              className="resize-none pr-12 min-h-[44px] max-h-[400px] overflow-y-auto"
               rows={1}
               disabled={isProcessing}
             />

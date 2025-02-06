@@ -15,23 +15,23 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
       )}
 
       {/* Handle output_message actions */}
-      {step.action?.name === "output_message" && (
+      {step.action?.name === "output_message" ? (
         <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
           {step.action.parameters?.message || step.result?.details}
         </div>
+      ) : (
+        /* For all other actions or no action, show the summary if available */
+        step.result?.summary && (
+          <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-muted text-muted-foreground">
+            {step.result.summary}
+          </div>
+        )
       )}
 
       {/* Handle error messages */}
       {step.result?.error && (
         <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-destructive text-destructive-foreground">
           {step.result.error}
-        </div>
-      )}
-
-      {/* For all other actions, show the summary if available */}
-      {!step.action?.name && step.result?.summary && (
-        <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-muted text-muted-foreground">
-          {step.result.summary}
         </div>
       )}
     </>

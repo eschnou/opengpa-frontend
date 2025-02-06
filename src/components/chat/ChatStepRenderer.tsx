@@ -52,7 +52,6 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
         title: "Copied to clipboard",
         description: "Code has been copied to your clipboard",
       });
-      // Reset the copied state after 2 seconds
       setTimeout(() => setCopiedBlockIndex(null), 2000);
     } catch (err) {
       toast({
@@ -77,7 +76,7 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
     return (
       <div className="relative my-4">
         {language && (
-          <div className="absolute top-0 right-0 px-3 py-1 text-sm text-muted-foreground bg-muted rounded-tr-lg">
+          <div className="absolute top-0 left-0 px-3 py-1 text-sm text-muted-foreground bg-secondary rounded-tl-lg">
             {language}
           </div>
         )}
@@ -86,7 +85,7 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
             variant="ghost"
             size="sm"
             onClick={() => copyToClipboard(codeString, blockIndex)}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-secondary"
           >
             {copiedBlockIndex === blockIndex ? (
               <RotateCcw className="h-4 w-4" />
@@ -95,7 +94,7 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
             )}
           </Button>
         </div>
-        <pre className={`${className} mt-6 p-4 rounded-lg bg-muted overflow-x-auto`}>
+        <pre className={`${className} mt-6 p-4 rounded-lg bg-secondary text-secondary-foreground overflow-x-auto`}>
           <code {...props}>{children}</code>
         </pre>
       </div>

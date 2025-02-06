@@ -1,7 +1,16 @@
 {
   "examples": [
-    "Create a new React component for a user profile card",
-    "Help me implement form validation for my login page",
-    "Add a dark mode toggle to my application"
+    {
+      "title": "Create a user profile card",
+      "body": "Can you help me create a new React component for a user profile card? It should display the user's avatar, name, and bio."
+    },
+    {
+      "title": "Add form validation",
+      "body": "Help me implement form validation for my login page. I need to validate email format and ensure password meets security requirements."
+    },
+    {
+      "title": "Implement dark mode",
+      "body": "Add a dark mode toggle to my application. It should persist the user's preference and apply appropriate styles."
+    }
   ]
 }

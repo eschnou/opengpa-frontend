@@ -41,6 +41,10 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
     enabled: !!taskId,
   });
 
+  const handleExampleClick = (body: string) => {
+    setMessage(body);
+  };
+
   if (!taskId) {
     return (
       <main className="fixed left-64 top-16 right-0 bottom-0 bg-background overflow-hidden flex flex-col">
@@ -50,7 +54,13 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
             <p className="text-muted-foreground">Here are some examples of what you can ask:</p>
             <ul className="space-y-3 text-sm">
               {chatExamples.examples.map((example, index) => (
-                <li key={index} className="p-3 bg-muted rounded-lg">"{example}"</li>
+                <li 
+                  key={index} 
+                  className="p-3 bg-muted rounded-lg cursor-pointer hover:bg-accent transition-colors"
+                  onClick={() => handleExampleClick(example.body)}
+                >
+                  "{example.title}"
+                </li>
               ))}
             </ul>
           </div>

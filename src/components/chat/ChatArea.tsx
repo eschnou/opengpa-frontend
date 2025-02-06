@@ -61,6 +61,9 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       const newTask = await createTask(message);
       console.log("Task created successfully:", newTask);
       
+      // Refresh the tasks list after creating a new task
+      await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      
       if (onTaskCreated) {
         onTaskCreated(newTask.id);
       }
@@ -80,6 +83,8 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
         // Check if this step is marked as final
         if (currentStep.action?.final || currentStep.result?.final) {
           console.log("Task completed with final step");
+          // Refresh the tasks list after task completion
+          await queryClient.invalidateQueries({ queryKey: ["tasks"] });
           break;
         }
         attempts++;

@@ -11,6 +11,11 @@ const Index = () => {
     setSelectedTaskId(undefined);
   };
 
+  const handleTaskCreated = (taskId: string) => {
+    console.log("New task created:", taskId);
+    setSelectedTaskId(taskId);
+  };
+
   return (
     <>
       <TopNav />
@@ -19,7 +24,10 @@ const Index = () => {
         selectedTaskId={selectedTaskId}
         onNewChat={handleNewChat}
       />
-      <ChatArea taskId={selectedTaskId} />
+      <ChatArea 
+        taskId={selectedTaskId} 
+        onTaskCreated={handleTaskCreated}
+      />
     </>
   );
 };

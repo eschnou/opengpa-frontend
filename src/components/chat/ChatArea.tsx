@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { httpClient } from "@/lib/http-client";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
 import { ChatStepRenderer } from "./ChatStepRenderer";
 import chatExamples from "@/config/chat-examples.json";
+import { createTask, progressTask } from "@/services/task.service";
+import { useToast } from "@/components/ui/use-toast";
 
 const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
   console.log("Fetching steps for task:", taskId);
@@ -24,10 +26,14 @@ const fetchTask = async (taskId: string): Promise<TaskDTO> => {
 
 interface ChatAreaProps {
   taskId?: string;
+  onTaskCreated?: (taskId: string) => void;
 }
 
-export const ChatArea = ({ taskId }: ChatAreaProps) => {
+export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
   const [message, setMessage] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: task } = useQuery({
     queryKey: ["task", taskId],
@@ -43,6 +49,46 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
 
   const handleExampleClick = (body: string) => {
     setMessage(body);
+  };
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || isProcessing) return;
+
+    setIsProcessing(true);
+    try {
+      // Create new task
+      const newTask = await createTask(message);
+      if (onTaskCreated) {
+        onTaskCreated(newTask.id);
+      }
+
+      // Progress the task up to 10 times
+      let currentStep: TaskStepDTO | undefined;
+      let attempts = 0;
+      const MAX_ATTEMPTS = 10;
+
+      while (attempts < MAX_ATTEMPTS) {
+        currentStep = await progressTask(newTask.id, message);
+        // Refresh the steps query to update the UI
+        await queryClient.invalidateQueries({ queryKey: ["taskSteps", newTask.id] });
+        
+        if (currentStep.result?.final) {
+          break;
+        }
+        attempts++;
+      }
+
+      setMessage("");
+    } catch (error) {
+      console.error("Error processing task:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process your request. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (!taskId) {
@@ -72,9 +118,13 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
               className="resize-none"
               rows={4}
             />
-            <Button className="w-full mt-4">
+            <Button 
+              className="w-full mt-4" 
+              onClick={handleSendMessage}
+              disabled={isProcessing}
+            >
               <Send className="h-5 w-5 mr-2" />
-              Send message
+              {isProcessing ? "Processing..." : "Send message"}
             </Button>
           </div>
         </div>
@@ -97,8 +147,8 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
               </div>
             )}
             
-            {steps?.map((step) => (
-              <div key={step.id} className="space-y-4">
+            {steps?.map((step, index) => (
+              <div key={`${step.id}-${index}`} className="space-y-4">
                 <ChatStepRenderer step={step} />
               </div>
             ))}
@@ -115,7 +165,11 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
             className="resize-none"
             rows={1}
           />
-          <Button className="shrink-0">
+          <Button 
+            className="shrink-0" 
+            onClick={handleSendMessage}
+            disabled={isProcessing}
+          >
             <Send className="h-5 w-5" />
           </Button>
         </div>

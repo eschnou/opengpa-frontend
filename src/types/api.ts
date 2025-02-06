@@ -32,15 +32,19 @@ export interface ActionDTO {
   final?: boolean;
 }
 
+export interface ResultDTO {
+  status: string;
+  details?: any;
+  summary: string;
+  error?: string;
+  message?: string;
+}
+
 export interface TaskStepDTO {
   id: string;
   taskId: string;
   input: string;
   action?: ActionDTO;
-  result: {
-    summary: string;
-    details?: any;
-    [key: string]: any;
-  };
+  result: ResultDTO;
   created: string;
 }

@@ -5,34 +5,31 @@ interface ChatStepRendererProps {
 }
 
 export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
-  // Default renderer for input
-  if (step.input && step.input !== "string") {
+  // Render the result message if available
+  if (step.result?.details) {
     return (
-      <div className="max-w-[80%] p-4 rounded-lg bg-muted">
-        {step.input}
+      <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
+        {step.result.details}
       </div>
     );
   }
 
-  // Handle different result types
-  if (step.result) {
-    // Special handling for output_message action
-    if (step.action?.name === "output_message" && step.result.details) {
-      return (
-        <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
-          {step.result.details}
-        </div>
-      );
-    }
+  // Fallback to summary if details aren't available
+  if (step.result?.summary) {
+    return (
+      <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
+        {step.result.summary}
+      </div>
+    );
+  }
 
-    // Default case: show summary
-    if (step.result.summary) {
-      return (
-        <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
-          {step.result.summary}
-        </div>
-      );
-    }
+  // Show any error messages
+  if (step.result?.error) {
+    return (
+      <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-destructive text-destructive-foreground">
+        {step.result.error}
+      </div>
+    );
   }
 
   return null;

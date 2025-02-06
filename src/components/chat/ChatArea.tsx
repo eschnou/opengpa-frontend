@@ -71,7 +71,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       const MAX_ATTEMPTS = 5;
 
       while (attempts < MAX_ATTEMPTS) {
-        currentStep = await progressTask(newTask.id, message);
+        currentStep = await progressTask(newTask.id);
         console.log(`Task progress attempt ${attempts + 1}:`, currentStep);
         
         // Refresh the steps query to update the UI

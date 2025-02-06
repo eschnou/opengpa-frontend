@@ -12,9 +12,11 @@ export const createTask = async (message: string): Promise<TaskDTO> => {
   return response.data;
 };
 
-export const progressTask = async (taskId: string, message: string): Promise<TaskStepDTO> => {
-  console.log("Progressing task:", taskId, "with message:", message);
-  const response = await httpClient.post(`/api/tasks/${taskId}`, { message });
+export const progressTask = async (taskId: string): Promise<TaskStepDTO> => {
+  console.log("Progressing task:", taskId);
+  const response = await httpClient.post(`/api/tasks/${taskId}`, {
+    message: "" // Empty message since we don't want to repeat the input
+  });
   console.log("Task progressed:", response.data);
   return response.data;
 };

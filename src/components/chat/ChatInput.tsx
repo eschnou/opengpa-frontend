@@ -26,6 +26,7 @@ export const ChatInput = ({
           placeholder="Type your message..."
           className="resize-none"
           rows={1}
+          disabled={isProcessing}
         />
         {isProcessing ? (
           <Button 

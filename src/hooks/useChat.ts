@@ -47,9 +47,9 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     setIsStopping(true);
   };
 
-  const handleFileAttachment = async (file: File) => {
-    console.log("Handling file attachment:", file.name);
-    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+  const handleFileAttachment = (file: File | null) => {
+    console.log("Handling file attachment:", file?.name);
+    if (file && file.size > 10 * 1024 * 1024) { // 10MB limit
       toast({
         title: "File too large",
         description: "Please select a file smaller than 10MB",
@@ -58,10 +58,12 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       return;
     }
     setAttachedFile(file);
-    toast({
-      title: "File attached",
-      description: "Your file has been attached and will be uploaded when you send your message.",
-    });
+    if (file) {
+      toast({
+        title: "File attached",
+        description: "Your file has been attached and will be uploaded when you send your message.",
+      });
+    }
   };
 
   const processTaskLoop = async (taskId: string, initialMessage?: string) => {

@@ -9,6 +9,8 @@ interface WelcomeChatProps {
   onMessageChange: (message: string) => void;
   onSendMessage: (file?: File) => void;
   onExampleClick: (body: string) => void;
+  attachedFile?: File | null;
+  onFileAttach?: (file: File | null) => void;
 }
 
 export const WelcomeChat = ({
@@ -17,6 +19,8 @@ export const WelcomeChat = ({
   onMessageChange,
   onSendMessage,
   onExampleClick,
+  attachedFile,
+  onFileAttach,
 }: WelcomeChatProps) => {
   return (
     <main className="fixed left-64 top-16 right-0 bottom-0 bg-background overflow-hidden flex flex-col">
@@ -42,6 +46,8 @@ export const WelcomeChat = ({
             isProcessing={isProcessing}
             onMessageChange={onMessageChange}
             onSendMessage={onSendMessage}
+            attachedFile={attachedFile}
+            onFileAttach={onFileAttach}
           />
         </div>
       </div>

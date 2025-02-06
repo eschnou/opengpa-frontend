@@ -13,6 +13,8 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
   const {
     message,
     setMessage,
+    attachedFile,
+    handleFileAttachment,
     isProcessing,
     task,
     steps,
@@ -30,6 +32,8 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
         onMessageChange={setMessage}
         onSendMessage={handleSendMessage}
         onExampleClick={setMessage}
+        attachedFile={attachedFile}
+        onFileAttach={handleFileAttachment}
       />
     );
   }
@@ -66,6 +70,8 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
         onMessageChange={setMessage}
         onSendMessage={handleSendMessage}
         onStopProcessing={handleStopProcessing}
+        attachedFile={attachedFile}
+        onFileAttach={handleFileAttachment}
       />
     </main>
   );

@@ -54,7 +54,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
   };
 
   const handleStopProcessing = () => {
-    console.log("Stopping task processing...");
+    console.log("Stop processing requested");
     setShouldStopProcessing(true);
   };
 
@@ -81,13 +81,21 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       const MAX_ATTEMPTS = 5;
 
       while (attempts < MAX_ATTEMPTS) {
+        // Check stop condition before making the API call
         if (shouldStopProcessing) {
-          console.log("Breaking task progression loop - stop requested");
+          console.log("Stopping task processing as requested");
+          toast({
+            title: "Processing stopped",
+            description: "Task processing was stopped as requested.",
+          });
           break;
         }
 
+        attempts++;
+        console.log(`Starting progress attempt ${attempts}`);
+        
         currentStep = await progressTask(newTask.id);
-        console.log(`Task progress attempt ${attempts + 1}:`, currentStep);
+        console.log(`Task progress attempt ${attempts}:`, currentStep);
         
         await queryClient.invalidateQueries({ queryKey: ["taskSteps", newTask.id] });
         
@@ -96,15 +104,6 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
           await queryClient.invalidateQueries({ queryKey: ["tasks"] });
           break;
         }
-        attempts++;
-      }
-
-      if (shouldStopProcessing) {
-        console.log("Task processing was stopped by user");
-        toast({
-          title: "Processing stopped",
-          description: "Task processing was stopped as requested.",
-        });
       }
 
       setMessage("");

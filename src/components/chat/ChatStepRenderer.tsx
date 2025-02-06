@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { httpClient } from "@/lib/http-client";
+import ReactMarkdown from 'react-markdown';
 
 interface ChatStepRendererProps {
   step: TaskStepDTO;
@@ -57,8 +58,10 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
 
       {/* Handle output_message actions */}
       {step.action?.name === "output_message" ? (
-        <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground">
-          {step.action.parameters?.message || step.result?.details}
+        <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground prose prose-invert">
+          <ReactMarkdown>
+            {step.action.parameters?.message || step.result?.details || ''}
+          </ReactMarkdown>
         </div>
       ) : (
         /* For all other actions or no action, show the summary if available */

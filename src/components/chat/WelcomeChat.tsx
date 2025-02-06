@@ -1,13 +1,13 @@
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import chatExamples from "@/config/chat-examples.json";
+import { MessageInput } from "./MessageInput";
 
 interface WelcomeChatProps {
   message: string;
   isProcessing: boolean;
   onMessageChange: (message: string) => void;
-  onSendMessage: () => void;
+  onSendMessage: (file?: File) => void;
   onExampleClick: (body: string) => void;
 }
 
@@ -37,21 +37,12 @@ export const WelcomeChat = ({
           </ul>
         </div>
         <div className="w-full max-w-md space-y-4">
-          <Textarea
-            value={message}
-            onChange={(e) => onMessageChange(e.target.value)}
-            placeholder="Type your message here..."
-            className="resize-none"
-            rows={4}
+          <MessageInput
+            message={message}
+            isProcessing={isProcessing}
+            onMessageChange={onMessageChange}
+            onSendMessage={onSendMessage}
           />
-          <Button 
-            className="w-full" 
-            onClick={onSendMessage}
-            disabled={isProcessing}
-          >
-            <Send className="h-5 w-5 mr-2" />
-            {isProcessing ? "Processing..." : "Send message"}
-          </Button>
         </div>
       </div>
     </main>

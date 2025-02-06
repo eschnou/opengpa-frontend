@@ -1,25 +1,11 @@
 import { httpClient } from "@/lib/http-client";
 import { TaskDTO, TaskStepDTO } from "@/types/api";
 
-export const createTask = async (prompt: string, file?: File): Promise<TaskDTO> => {
-  console.log("Creating task with prompt:", prompt, "and file:", file?.name);
+export const createTask = async (message: string): Promise<TaskDTO> => {
+  console.log("Creating task with message:", message);
   
-  const formData = new FormData();
-  formData.append("prompt", prompt);
-  if (file) {
-    formData.append("file", file);
-  }
-  
-  // Log the FormData contents for debugging
-  for (const pair of formData.entries()) {
-    console.log('FormData content:', pair[0], pair[1]);
-  }
-  
-  const response = await httpClient.post("/api/tasks", formData, {
-    headers: {
-      // Let Axios set the Content-Type header automatically for multipart/form-data
-      // Including the boundary parameter
-    }
+  const response = await httpClient.post("/api/tasks", {
+    message: message
   });
   
   console.log("Task created response:", response.data);

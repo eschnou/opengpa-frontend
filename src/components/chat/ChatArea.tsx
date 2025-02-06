@@ -17,6 +17,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
     task,
     steps,
     isLoading,
+    isStopping,
     handleStopProcessing,
     handleSendMessage,
   } = useChat(taskId, onTaskCreated);
@@ -54,7 +55,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
               </div>
             ))}
 
-            {isProcessing && <LoadingIndicator />}
+            {isProcessing && <LoadingIndicator stopping={isStopping} />}
           </>
         )}
       </div>

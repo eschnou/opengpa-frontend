@@ -22,6 +22,7 @@ const fetchTask = async (taskId: string): Promise<TaskDTO> => {
 export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => void) => {
   const [message, setMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isStopping, setIsStopping] = useState(false);
   const stopProcessingRef = useRef(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -41,6 +42,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
   const handleStopProcessing = () => {
     console.log("Stop processing requested");
     stopProcessingRef.current = true;
+    setIsStopping(true);
   };
 
   const handleSendMessage = async () => {
@@ -48,6 +50,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
 
     setIsProcessing(true);
     stopProcessingRef.current = false;
+    setIsStopping(false);
     
     try {
       console.log("Starting to create task...");
@@ -101,6 +104,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     } finally {
       setIsProcessing(false);
       stopProcessingRef.current = false;
+      setIsStopping(false);
     }
   };
 
@@ -108,6 +112,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     message,
     setMessage,
     isProcessing,
+    isStopping,
     task,
     steps,
     isLoading,

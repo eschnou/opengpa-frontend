@@ -6,6 +6,8 @@ interface ChatInputProps {
   onMessageChange: (message: string) => void;
   onSendMessage: (file?: File) => void;
   onStopProcessing: () => void;
+  attachedFile?: File | null;
+  onFileAttach?: (file: File) => void;
 }
 
 export const ChatInput = (props: ChatInputProps) => {

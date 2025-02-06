@@ -22,6 +22,7 @@ const fetchTask = async (taskId: string): Promise<TaskDTO> => {
 
 export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => void) => {
   const [message, setMessage] = useState("");
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
   const stopProcessingRef = useRef(false);
@@ -44,6 +45,23 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     console.log("Stop processing requested");
     stopProcessingRef.current = true;
     setIsStopping(true);
+  };
+
+  const handleFileAttachment = async (file: File) => {
+    console.log("Handling file attachment:", file.name);
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      toast({
+        title: "File too large",
+        description: "Please select a file smaller than 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+    setAttachedFile(file);
+    toast({
+      title: "File attached",
+      description: "Your file has been attached and will be uploaded when you send your message.",
+    });
   };
 
   const processTaskLoop = async (taskId: string, initialMessage?: string) => {
@@ -76,8 +94,8 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     }
   };
 
-  const handleSendMessage = async (file?: File) => {
-    if ((!message.trim() && !file) || isProcessing) return;
+  const handleSendMessage = async () => {
+    if ((!message.trim() && !attachedFile) || isProcessing) return;
 
     setIsProcessing(true);
     stopProcessingRef.current = false;
@@ -86,7 +104,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     setMessage(""); // Clear the message immediately
     
     try {
-      console.log("Starting to process message...", { hasFile: !!file });
+      console.log("Starting to process message...", { hasFile: !!attachedFile });
       
       let currentTaskId = taskId;
       
@@ -104,15 +122,16 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         }
       }
 
-      // Upload file if provided
-      if (file) {
+      // Upload file if attached
+      if (attachedFile) {
         console.log("Uploading file...");
         try {
-          await uploadDocumentToWorkspace(currentTaskId, file);
+          await uploadDocumentToWorkspace(currentTaskId, attachedFile);
           toast({
             title: "File uploaded",
             description: "Your file has been uploaded successfully.",
           });
+          setAttachedFile(null); // Clear the attached file after successful upload
         } catch (error) {
           console.error("Error uploading file:", error);
           toast({
@@ -142,6 +161,8 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
   return {
     message,
     setMessage,
+    attachedFile,
+    handleFileAttachment,
     isProcessing,
     isStopping,
     task,

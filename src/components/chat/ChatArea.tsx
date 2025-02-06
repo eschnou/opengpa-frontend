@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -32,6 +32,7 @@ interface ChatAreaProps {
 export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
   const [message, setMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -51,13 +52,24 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
     setMessage(body);
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      toast({
+        title: "File selected",
+        description: `Selected file: ${file.name}`,
+      });
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!message.trim() || isProcessing) return;
 
     setIsProcessing(true);
     try {
-      // Create new task
-      const newTask = await createTask(message);
+      // Create new task with optional file
+      const newTask = await createTask(message, selectedFile || undefined);
       if (onTaskCreated) {
         onTaskCreated(newTask.id);
       }
@@ -79,6 +91,12 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       }
 
       setMessage("");
+      setSelectedFile(null);
+      // Reset the file input
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = "";
+      }
     } catch (error) {
       console.error("Error processing task:", error);
       toast({
@@ -110,7 +128,28 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
               ))}
             </ul>
           </div>
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-md space-y-4">
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => document.getElementById('file-upload')?.click()}
+                className="shrink-0"
+              >
+                <Paperclip className="h-5 w-5" />
+              </Button>
+              <input
+                id="file-upload"
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              {selectedFile && (
+                <span className="text-sm text-muted-foreground truncate">
+                  {selectedFile.name}
+                </span>
+              )}
+            </div>
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -119,7 +158,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
               rows={4}
             />
             <Button 
-              className="w-full mt-4" 
+              className="w-full" 
               onClick={handleSendMessage}
               disabled={isProcessing}
             >
@@ -158,6 +197,20 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       
       <div className="p-4 border-t border-border">
         <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={() => document.getElementById('file-upload-chat')?.click()}
+            className="shrink-0"
+          >
+            <Paperclip className="h-5 w-5" />
+          </Button>
+          <input
+            id="file-upload-chat"
+            type="file"
+            className="hidden"
+            onChange={handleFileChange}
+          />
           <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -173,6 +226,11 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
             <Send className="h-5 w-5" />
           </Button>
         </div>
+        {selectedFile && (
+          <div className="mt-2 text-sm text-muted-foreground">
+            Selected file: {selectedFile.name}
+          </div>
+        )}
       </div>
     </main>
   );

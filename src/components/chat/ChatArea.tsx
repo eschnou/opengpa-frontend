@@ -1,4 +1,3 @@
-<lov-code>
 import { useState, useRef } from "react";
 import { Send, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -150,4 +149,71 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
             <Button 
               className="w-full" 
               onClick={handleSendMessage}
-              disabled
+              disabled={isProcessing}
+            >
+              <Send className="h-5 w-5 mr-2" />
+              {isProcessing ? "Processing..." : "Send message"}
+            </Button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="fixed left-64 top-16 right-0 bottom-0 bg-background overflow-hidden flex flex-col">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {isLoading ? (
+          <div className="text-center text-muted-foreground p-4">
+            Loading conversation...
+          </div>
+        ) : (
+          <>
+            {task?.request && (
+              <div className="max-w-[80%] p-4 rounded-lg bg-muted">
+                {task.request}
+              </div>
+            )}
+            
+            {steps?.map((step, index) => (
+              <div key={`${step.id}-${index}`} className="space-y-4">
+                <ChatStepRenderer step={step} />
+              </div>
+            ))}
+
+            {isProcessing && <LoadingIndicator />}
+          </>
+        )}
+      </div>
+      
+      <div className="p-4 border-t border-border">
+        <div className="flex gap-2">
+          <Textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type your message..."
+            className="resize-none"
+            rows={1}
+          />
+          {isProcessing ? (
+            <Button 
+              variant="destructive"
+              className="shrink-0" 
+              onClick={handleStopProcessing}
+            >
+              <Square className="h-5 w-5" />
+            </Button>
+          ) : (
+            <Button 
+              className="shrink-0" 
+              onClick={handleSendMessage}
+              disabled={isProcessing}
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+};

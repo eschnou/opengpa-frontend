@@ -47,9 +47,9 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
           </div>
         ) : (
           <>
-            {task?.request && (
-              <div className="max-w-[80%] p-4 rounded-lg bg-muted">
-                {task.request}
+            {task?.title && (
+              <div className="max-w-[80%] p-4 rounded-lg glass">
+                <h2 className="text-xl font-semibold text-foreground">{task.title}</h2>
               </div>
             )}
             

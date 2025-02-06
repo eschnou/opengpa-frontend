@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Send, Square, Paperclip, Camera, X } from "lucide-react";
 import { KeyboardEvent, useRef } from "react";
 import { toast } from "@/components/ui/use-toast";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface MessageInputProps {
   message: string;
@@ -120,67 +125,93 @@ export const MessageInput = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-4 w-4 ml-auto"
+              className="h-4 w-4 ml-auto hover:bg-background/50"
               onClick={() => onFileAttach?.(null as any)}
             >
               <X className="h-3 w-3" />
             </Button>
           </div>
         )}
-        <div className="flex gap-2">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept=".pdf,.doc,.docx,.txt"
-          />
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isProcessing}
-              className="hover:bg-muted"
-            >
-              <Paperclip className="h-5 w-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={handleScreenshot}
-              disabled={isProcessing}
-              className="hover:bg-muted"
-            >
-              <Camera className="h-5 w-5" />
-            </Button>
+        <div className="flex gap-2 items-end">
+          <div className="flex gap-1.5">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isProcessing}
+                  className="hover:bg-muted"
+                >
+                  <Paperclip className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Attach file</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleScreenshot}
+                  disabled={isProcessing}
+                  className="hover:bg-muted"
+                >
+                  <Camera className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Take screenshot</TooltipContent>
+            </Tooltip>
           </div>
-          <Textarea
-            value={message}
-            onChange={(e) => onMessageChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            className="resize-none"
-            rows={1}
-            disabled={isProcessing}
-          />
-          {isProcessing && onStopProcessing ? (
-            <Button 
-              variant="destructive"
-              className="shrink-0" 
-              onClick={onStopProcessing}
-            >
-              <Square className="h-5 w-5" />
-            </Button>
-          ) : (
-            <Button 
-              className="shrink-0" 
-              onClick={() => onSendMessage()}
+          <div className="flex-1 relative">
+            <Textarea
+              value={message}
+              onChange={(e) => onMessageChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your message..."
+              className="resize-none pr-12 min-h-[44px] max-h-32"
+              rows={1}
               disabled={isProcessing}
-            >
-              <Send className="h-5 w-5" />
-            </Button>
-          )}
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept=".pdf,.doc,.docx,.txt"
+            />
+            <div className="absolute right-2 bottom-1.5">
+              {isProcessing && onStopProcessing ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="destructive"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={onStopProcessing}
+                    >
+                      <Square className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Stop processing</TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onSendMessage()}
+                      disabled={isProcessing || !message.trim()}
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Send message</TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

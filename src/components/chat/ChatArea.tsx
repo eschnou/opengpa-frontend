@@ -70,19 +70,17 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       const newTask = await createTask(message);
       console.log("Task created successfully:", newTask);
       
-      // Refresh the tasks list after creating a new task
       await queryClient.invalidateQueries({ queryKey: ["tasks"] });
       
       if (onTaskCreated) {
         onTaskCreated(newTask.id);
       }
 
-      // Progress the task up to 5 times or until we get a final result
       let currentStep: TaskStepDTO | undefined;
       let attempts = 0;
       const MAX_ATTEMPTS = 5;
 
-      while (!shouldStopProcessing && attempts < MAX_ATTEMPTS) {
+      while (attempts < MAX_ATTEMPTS) {
         if (shouldStopProcessing) {
           console.log("Breaking task progression loop - stop requested");
           break;
@@ -91,13 +89,10 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
         currentStep = await progressTask(newTask.id);
         console.log(`Task progress attempt ${attempts + 1}:`, currentStep);
         
-        // Refresh the steps query to update the UI
         await queryClient.invalidateQueries({ queryKey: ["taskSteps", newTask.id] });
         
-        // Check if this step is marked as final
         if (currentStep.action?.final || currentStep.result?.final) {
           console.log("Task completed with final step");
-          // Refresh the tasks list after task completion
           await queryClient.invalidateQueries({ queryKey: ["tasks"] });
           break;
         }

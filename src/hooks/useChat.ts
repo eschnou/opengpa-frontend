@@ -90,7 +90,11 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       
       if (currentStep.action?.final || currentStep.result?.final) {
         console.log("Task completed with final step");
-        await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+        // Invalidate both task and tasks queries to refresh the title
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["task", taskId] }),
+          queryClient.invalidateQueries({ queryKey: ["tasks"] })
+        ]);
         break;
       }
     }

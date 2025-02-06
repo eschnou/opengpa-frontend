@@ -49,3 +49,9 @@ export interface TaskStepDTO {
   result: ResultDTO;
   created: string;
 }
+
+export interface Document {
+  workspaceId: string;
+  name: string;
+  metadata: Record<string, string>;
+}

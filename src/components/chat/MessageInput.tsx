@@ -54,6 +54,21 @@ export const MessageInput = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && onFileAttach) {
+      // Check file type
+      const fileType = file.name.split('.').pop()?.toLowerCase();
+      if (!['txt', 'csv'].includes(fileType || '')) {
+        toast({
+          title: "Invalid file type",
+          description: "Only .txt and .csv files are allowed",
+          variant: "destructive",
+        });
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      
       onFileAttach(file);
       // Reset file input
       if (fileInputRef.current) {
@@ -156,7 +171,7 @@ export const MessageInput = ({
                   <Paperclip className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Attach file</TooltipContent>
+              <TooltipContent>Attach .txt or .csv file</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -189,7 +204,7 @@ export const MessageInput = ({
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
-              accept=".pdf,.doc,.docx,.txt"
+              accept=".txt,.csv"
             />
             <div className="absolute right-2 bottom-1.5">
               {isProcessing && onStopProcessing ? (

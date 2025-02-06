@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
 import { httpClient } from "@/lib/http-client";
 import { createTask, progressTask } from "@/services/task.service";
+import { uploadDocumentToWorkspace } from "@/services/document.service";
 
 const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
   console.log("Fetching steps for task:", taskId);
@@ -62,7 +63,6 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       attempts++;
       console.log(`Starting progress attempt ${attempts}`);
       
-      // Only pass the message in the first request
       const currentStep = await progressTask(taskId, attempts === 1 ? initialMessage : undefined);
       console.log(`Task progress attempt ${attempts}:`, currentStep);
       
@@ -76,8 +76,8 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!message.trim() || isProcessing) return;
+  const handleSendMessage = async (file?: File) => {
+    if ((!message.trim() && !file) || isProcessing) return;
 
     setIsProcessing(true);
     stopProcessingRef.current = false;
@@ -86,26 +86,45 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     setMessage(""); // Clear the message immediately
     
     try {
-      console.log("Starting to process message...");
+      console.log("Starting to process message...", { hasFile: !!file });
       
-      if (taskId) {
-        // Resume existing task with new message
-        console.log("Resuming existing task:", taskId);
-        await processTaskLoop(taskId, currentMessage);
-      } else {
+      let currentTaskId = taskId;
+      
+      if (!currentTaskId) {
         // Create new task
         console.log("Creating new task...");
         const newTask = await createTask(currentMessage);
         console.log("Task created successfully:", newTask);
+        currentTaskId = newTask.id;
         
         await queryClient.invalidateQueries({ queryKey: ["tasks"] });
         
         if (onTaskCreated) {
           onTaskCreated(newTask.id);
         }
-
-        await processTaskLoop(newTask.id);
       }
+
+      // Upload file if provided
+      if (file) {
+        console.log("Uploading file...");
+        try {
+          await uploadDocumentToWorkspace(currentTaskId, file);
+          toast({
+            title: "File uploaded",
+            description: "Your file has been uploaded successfully.",
+          });
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          toast({
+            title: "Upload failed",
+            description: "Failed to upload file. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      await processTaskLoop(currentTaskId, currentMessage);
     } catch (error) {
       console.error("Error processing task:", error);
       toast({

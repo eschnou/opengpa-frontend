@@ -78,17 +78,10 @@ paths:
       operationId: newTask
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              required:
-              - prompt
-              type: object
-              properties:
-                prompt:
-                  type: string
-                file:
-                  type: string
-                  format: binary
+              $ref: "#/components/schemas/InputDTO"
+        required: true
       responses:
         "200":
           description: OK
@@ -488,6 +481,13 @@ components:
           type: string
         password:
           type: string
+    InputDTO:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
     TaskDTO:
       type: object
       properties:
@@ -509,13 +509,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    InputDTO:
-      required:
-      - message
-      type: object
-      properties:
-        message:
-          type: string
     ActionDTO:
       type: object
       properties:

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -33,6 +33,7 @@ interface ChatAreaProps {
 export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
   const [message, setMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [shouldStopProcessing, setShouldStopProcessing] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -52,10 +53,16 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
     setMessage(body);
   };
 
+  const handleStopProcessing = () => {
+    console.log("Stopping task processing...");
+    setShouldStopProcessing(true);
+  };
+
   const handleSendMessage = async () => {
     if (!message.trim() || isProcessing) return;
 
     setIsProcessing(true);
+    setShouldStopProcessing(false);
     try {
       console.log("Starting to create task...");
       
@@ -74,7 +81,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       let attempts = 0;
       const MAX_ATTEMPTS = 5;
 
-      while (attempts < MAX_ATTEMPTS) {
+      while (attempts < MAX_ATTEMPTS && !shouldStopProcessing) {
         currentStep = await progressTask(newTask.id);
         console.log(`Task progress attempt ${attempts + 1}:`, currentStep);
         
@@ -91,6 +98,14 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
         attempts++;
       }
 
+      if (shouldStopProcessing) {
+        console.log("Task processing was stopped by user");
+        toast({
+          title: "Processing stopped",
+          description: "Task processing was stopped as requested.",
+        });
+      }
+
       setMessage("");
     } catch (error) {
       console.error("Error processing task:", error);
@@ -101,6 +116,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
       });
     } finally {
       setIsProcessing(false);
+      setShouldStopProcessing(false);
     }
   };
 
@@ -180,13 +196,23 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
             className="resize-none"
             rows={1}
           />
-          <Button 
-            className="shrink-0" 
-            onClick={handleSendMessage}
-            disabled={isProcessing}
-          >
-            <Send className="h-5 w-5" />
-          </Button>
+          {isProcessing ? (
+            <Button 
+              variant="destructive"
+              className="shrink-0" 
+              onClick={handleStopProcessing}
+            >
+              <Square className="h-5 w-5" />
+            </Button>
+          ) : (
+            <Button 
+              className="shrink-0" 
+              onClick={handleSendMessage}
+              disabled={isProcessing}
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+          )}
         </div>
       </div>
     </main>

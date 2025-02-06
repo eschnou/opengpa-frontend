@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/http-client";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
 import { ChatStepRenderer } from "./ChatStepRenderer";
+import chatExamples from "@/config/chat-examples.json";
 
 const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
   console.log("Fetching steps for task:", taskId);
@@ -48,9 +49,9 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
           <div className="max-w-md space-y-4 text-center">
             <p className="text-muted-foreground">Here are some examples of what you can ask:</p>
             <ul className="space-y-3 text-sm">
-              <li className="p-3 bg-muted rounded-lg">"Create a new React component for a user profile card"</li>
-              <li className="p-3 bg-muted rounded-lg">"Help me implement form validation for my login page"</li>
-              <li className="p-3 bg-muted rounded-lg">"Add a dark mode toggle to my application"</li>
+              {chatExamples.examples.map((example, index) => (
+                <li key={index} className="p-3 bg-muted rounded-lg">"{example}"</li>
+              ))}
             </ul>
           </div>
           <div className="w-full max-w-md">
@@ -80,14 +81,12 @@ export const ChatArea = ({ taskId }: ChatAreaProps) => {
           </div>
         ) : (
           <>
-            {/* Display task request first */}
             {task?.request && (
               <div className="max-w-[80%] p-4 rounded-lg bg-muted">
                 {task.request}
               </div>
             )}
             
-            {/* Then display the conversation steps */}
             {steps?.map((step) => (
               <div key={step.id} className="space-y-4">
                 <ChatStepRenderer step={step} />

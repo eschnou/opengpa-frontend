@@ -38,6 +38,7 @@ export interface ResultDTO {
   summary: string;
   error?: string;
   message?: string;
+  final?: boolean;
 }
 
 export interface TaskStepDTO {

@@ -47,6 +47,69 @@ export const MessageInput = ({
     }
   };
 
+  const handleScreenshot = async () => {
+    try {
+      // Request screen capture
+      const stream = await navigator.mediaDevices.getDisplayMedia({ preferCurrentTab: true });
+      
+      // Create video element to capture the stream
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      
+      // Wait for video to load
+      await new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          video.play();
+          resolve(null);
+        };
+      });
+
+      // Create canvas to draw the screenshot
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      // Draw the video frame to canvas
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(video, 0, 0);
+      
+      // Stop all tracks
+      stream.getTracks().forEach(track => track.stop());
+      
+      // Convert canvas to blob
+      const blob = await new Promise<Blob>((resolve) => 
+        canvas.toBlob((blob) => resolve(blob!), 'image/png')
+      );
+      
+      // Create file from blob
+      const file = new File([blob], `screenshot-${Date.now()}.png`, { type: 'image/png' });
+      
+      // Use existing file attachment logic
+      if (onFileAttach) {
+        onFileAttach(file);
+        toast({
+          title: "Screenshot captured",
+          description: "Your screenshot has been attached successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Screenshot error:', error);
+      if (error instanceof Error && error.name === 'NotAllowedError') {
+        toast({
+          title: "Permission denied",
+          description: "You need to allow screen capture to take a screenshot.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Screenshot failed",
+          description: "Failed to capture screenshot. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <div className={className}>
       <div className="flex flex-col gap-2">
@@ -85,12 +148,7 @@ export const MessageInput = ({
             <Button 
               variant="outline" 
               size="icon"
-              onClick={() => {
-                toast({
-                  title: "Coming soon",
-                  description: "Screenshot functionality will be available soon",
-                });
-              }}
+              onClick={handleScreenshot}
               disabled={isProcessing}
               className="hover:bg-muted"
             >

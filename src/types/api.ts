@@ -41,6 +41,11 @@ export interface ResultDTO {
   final?: boolean;
 }
 
+export interface DocumentDTO {
+  taskId: string;
+  filename: string;
+}
+
 export interface TaskStepDTO {
   id: string;
   taskId: string;
@@ -48,6 +53,7 @@ export interface TaskStepDTO {
   action?: ActionDTO;
   result: ResultDTO;
   created: string;
+  documents?: DocumentDTO[];
 }
 
 export interface Document {

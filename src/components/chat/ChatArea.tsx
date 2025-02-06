@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { ChatStepRenderer } from "./ChatStepRenderer";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { WelcomeChat } from "./WelcomeChat";
@@ -10,6 +11,7 @@ interface ChatAreaProps {
 }
 
 export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const {
     message,
     setMessage,
@@ -23,6 +25,13 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
     handleStopProcessing,
     handleSendMessage,
   } = useChat(taskId, onTaskCreated);
+
+  // Auto-scroll when steps change or when processing starts
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [steps, isProcessing]);
 
   if (!taskId) {
     return (
@@ -40,7 +49,7 @@ export const ChatArea = ({ taskId, onTaskCreated }: ChatAreaProps) => {
 
   return (
     <main className="fixed left-64 top-16 right-0 bottom-0 bg-background overflow-hidden flex flex-col">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground p-4">
             Loading conversation...

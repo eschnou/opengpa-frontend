@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { ChevronLeft, MessageSquare, Sun, Moon, PlusCircle } from "lucide-react";
+import { ChevronLeft, MessageSquare, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/http-client";
 import { TaskDTO } from "@/types/api";
@@ -23,7 +22,6 @@ interface ChatSidebarProps {
 
 export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
-  const { theme, setTheme } = useTheme();
 
   const { data: tasks, isLoading } = useQuery({
     queryKey: ["tasks"],
@@ -81,17 +79,6 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
             </button>
           ))
         )}
-      </div>
-
-      <div className="p-4 border-t border-border">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-full h-10"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        >
-          {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </Button>
       </div>
     </aside>
   );

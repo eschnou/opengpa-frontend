@@ -1,4 +1,3 @@
-
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
 import { Download, AlertOctagon } from "lucide-react";
@@ -66,9 +65,9 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
           )}
           onClick={onStepClick}
         >
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             {step.result?.error && (
-              <div className="flex items-center gap-2 mb-2 self-end text-destructive">
+              <div className="flex items-center gap-1 self-end text-destructive text-sm">
                 <span className="font-medium">Error</span>
                 <AlertOctagon className="h-4 w-4" />
               </div>
@@ -97,9 +96,9 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
             )}
             onClick={onStepClick}
           >
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-1">
               {step.result?.error && (
-                <div className="flex items-center gap-2 mb-2 self-end text-destructive">
+                <div className="flex items-center gap-1 self-end text-destructive text-sm">
                   <span className="font-medium">Error</span>
                   <AlertOctagon className="h-4 w-4" />
                 </div>
@@ -132,4 +131,3 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
     </>
   );
 };
-

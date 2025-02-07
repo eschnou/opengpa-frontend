@@ -38,7 +38,7 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
       const chunk = details.chunks.find(c => c.id === uuid);
       if (!chunk) return `[${uuid}]`;
 
-      return ` [#${refNumber}]`;
+      return `__REF_${refNumber}__`;
     }
   );
 
@@ -54,13 +54,13 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
             text: ({ children }) => {
               if (typeof children !== 'string') return <>{children}</>;
               
-              // Split the text by reference markers
-              const parts = children.split(/(\[#\d+\])/);
+              // Split by our custom reference markers
+              const parts = children.split(/(\_\_REF\_\d+\_\_)/);
               
               return (
                 <>
                   {parts.map((part, index) => {
-                    const match = part.match(/\[#(\d+)\]/);
+                    const match = part.match(/\_\_REF\_(\d+)\_\_/);
                     if (!match) return part;
                     
                     const refNumber = parseInt(match[1]);
@@ -68,33 +68,31 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
                     if (!chunk) return part;
 
                     return (
-                      <span key={index} className="inline-flex items-center">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex items-center cursor-help ml-1">
-                              <Circle 
-                                className="h-4 w-4 inline-flex items-center justify-center fill-primary stroke-primary text-primary-foreground"
-                                strokeWidth={0}
+                      <Tooltip key={index}>
+                        <TooltipTrigger asChild>
+                          <span className="inline-flex items-center cursor-help">
+                            <Circle 
+                              className="h-4 w-4 inline-flex items-center justify-center fill-primary stroke-primary text-primary-foreground"
+                              strokeWidth={0}
+                            >
+                              <text
+                                x="8"
+                                y="11"
+                                className="text-[10px] font-medium fill-primary-foreground"
                               >
-                                <text
-                                  x="8"
-                                  y="11"
-                                  className="text-[10px] font-medium fill-primary-foreground"
-                                >
-                                  {refNumber}
-                                </text>
-                              </Circle>
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-sm">
-                            <div className="space-y-2">
-                              <p className="font-medium">{chunk.documentTitle}</p>
-                              <p className="text-sm text-muted-foreground">{chunk.documentDescription}</p>
-                              <p className="text-sm border-t pt-2 mt-2">{chunk.content}</p>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </span>
+                                {refNumber}
+                              </text>
+                            </Circle>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-sm">
+                          <div className="space-y-2">
+                            <p className="font-medium">{chunk.documentTitle}</p>
+                            <p className="text-sm text-muted-foreground">{chunk.documentDescription}</p>
+                            <p className="text-sm border-t pt-2 mt-2">{chunk.content}</p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                     );
                   })}
                 </>
@@ -108,3 +106,4 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
     </div>
   );
 };
+

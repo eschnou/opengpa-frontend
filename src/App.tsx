@@ -39,7 +39,14 @@ const App = () => (
             />
             <Route path="/dashboard" element={<Navigate to="/" replace />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -29,31 +29,35 @@ const ReferenceIndicator = ({ number, chunk }: {
     content: string;
   }
 }) => (
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <span className="inline-flex items-center cursor-help ml-1">
-        <Circle 
-          className="h-4 w-4 inline-flex items-center justify-center fill-primary stroke-primary text-primary-foreground"
-          strokeWidth={0}
-        >
-          <text
-            x="8"
-            y="11"
-            className="text-[10px] font-medium fill-primary-foreground"
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex items-center cursor-help ml-1">
+          <Circle 
+            className="h-4 w-4 inline-flex items-center justify-center fill-primary stroke-primary text-primary-foreground"
+            strokeWidth={0}
           >
-            {number}
-          </text>
-        </Circle>
-      </span>
-    </TooltipTrigger>
-    <TooltipContent className="max-w-sm">
-      <div className="space-y-2">
-        <p className="font-medium">{chunk.documentTitle}</p>
-        <p className="text-sm text-muted-foreground">{chunk.documentDescription}</p>
-        <p className="text-sm border-t pt-2 mt-2">{chunk.content}</p>
-      </div>
-    </TooltipContent>
-  </Tooltip>
+            <text
+              x="8"
+              y="11"
+              className="text-[10px] font-medium fill-primary-foreground"
+              dominantBaseline="middle"
+              textAnchor="middle"
+            >
+              {number}
+            </text>
+          </Circle>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-sm">
+        <div className="space-y-2">
+          <p className="font-medium">{chunk.documentTitle}</p>
+          <p className="text-sm text-muted-foreground">{chunk.documentDescription}</p>
+          <p className="text-sm border-t pt-2 mt-2">{chunk.content}</p>
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
 );
 
 export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
@@ -74,44 +78,43 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
         refs.push(id);
         return '';
       }
-    );
-    return {
-      text: cleanText.trim(),
-      references: refs.map(id => details.chunks.find(chunk => chunk.id === id)).filter(Boolean)
-    };
-  });
+    ).trim();
+
+    // Find the corresponding chunks for each reference
+    const references = refs
+      .map(id => details.chunks.find(chunk => chunk.id === id))
+      .filter((chunk): chunk is NonNullable<typeof chunk> => chunk !== undefined);
+
+    return { text: cleanText, references };
+  }).filter(({ text }) => text.length > 0);
 
   return (
     <div className="space-y-4">
-      <TooltipProvider>
-        <div className="flex flex-col gap-4">
-          {paragraphsWithRefs.map((paragraph, index) => (
-            <div key={index} className="flex items-start gap-1">
-              <ReactMarkdown
-                components={{
-                  p: ({ children }) => (
-                    <p className="inline">
-                      {children}
-                      {paragraph.references.map((chunk, refIndex) => chunk && (
-                        <ReferenceIndicator 
-                          key={chunk.id} 
-                          number={chunkIndexMap.get(chunk.id) || refIndex + 1} 
-                          chunk={chunk}
-                        />
-                      ))}
-                    </p>
-                  ),
-                  a: ({ node, ...props }) => (
-                    <a {...props} target="_blank" rel="noopener noreferrer" />
-                  ),
-                }}
-              >
-                {paragraph.text}
-              </ReactMarkdown>
-            </div>
-          ))}
+      {paragraphsWithRefs.map((paragraph, index) => (
+        <div key={index} className="flex flex-wrap items-baseline gap-1">
+          <div className="flex-grow">
+            <ReactMarkdown
+              components={{
+                p: ({ children }) => <p className="inline">{children}</p>,
+                a: ({ node, ...props }) => (
+                  <a {...props} target="_blank" rel="noopener noreferrer" />
+                ),
+              }}
+            >
+              {paragraph.text}
+            </ReactMarkdown>
+          </div>
+          <div className="flex-shrink-0 flex items-center">
+            {paragraph.references.map((chunk) => (
+              <ReferenceIndicator 
+                key={chunk.id} 
+                number={chunkIndexMap.get(chunk.id) || 0}
+                chunk={chunk}
+              />
+            ))}
+          </div>
         </div>
-      </TooltipProvider>
+      ))}
     </div>
   );
 };

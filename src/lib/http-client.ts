@@ -1,10 +1,9 @@
 import axios from "axios";
 import { getToken, removeToken } from "@/utils/token";
-
-const API_URL = "http://localhost:8000";
+import { APP_CONFIG } from "@/config/app.config";
 
 export const httpClient = axios.create({
-  baseURL: API_URL,
+  baseURL: APP_CONFIG.apiUrl,
   headers: {
     "Content-Type": "application/json",
   },

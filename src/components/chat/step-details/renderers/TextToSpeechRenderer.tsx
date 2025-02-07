@@ -48,13 +48,6 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg bg-muted p-4">
-        <h3 className="text-sm font-medium mb-2">Input Text:</h3>
-        <ReactMarkdown>
-          {step.action?.parameters?.input || ''}
-        </ReactMarkdown>
-      </div>
-
       {step.documents && step.documents.length > 0 && (
         <div className="rounded-lg bg-muted p-4">
           <h3 className="text-sm font-medium mb-2">Generated Audio:</h3>
@@ -87,6 +80,13 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
           </audio>
         </div>
       )}
+
+      <div className="rounded-lg bg-muted p-4">
+        <h3 className="text-sm font-medium mb-2">Input Text:</h3>
+        <ReactMarkdown>
+          {step.action?.parameters?.input || ''}
+        </ReactMarkdown>
+      </div>
     </div>
   );
 };

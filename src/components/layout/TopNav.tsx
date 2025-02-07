@@ -1,3 +1,4 @@
+
 import { Settings, FileText, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +29,7 @@ export const TopNav = () => {
         <Button variant="ghost" size="icon">
           <FileText className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
           <Settings className="h-5 w-5" />
         </Button>
         <Button variant="ghost" size="icon" onClick={handleLogout}>

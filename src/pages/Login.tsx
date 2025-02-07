@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -40,21 +41,26 @@ const Login = () => {
   });
 
   const onSubmit = async (values: AuthRequest) => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await authService.login(values);
       toast({
         title: "Login successful!",
         description: `Welcome back ${response.user.name || response.user.username}`,
       });
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
+      const errorMessage = error.response?.data?.message || "Invalid username or password";
       toast({
         title: "Login failed",
-        description: "Invalid username or password",
+        description: errorMessage,
         variant: "destructive",
+        duration: 5000,
       });
+      form.setValue('password', '');
     } finally {
       setIsLoading(false);
     }

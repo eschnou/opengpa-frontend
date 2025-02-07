@@ -60,7 +60,7 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
               return (
                 <>
                   {parts.map((part, index) => {
-                    const match = part.match(/\[#(\d+)\]/);
+                    const match = part.match(/\[#(\d+)\])/);
                     if (!match) return part;
                     
                     const refNumber = parseInt(match[1]);
@@ -71,14 +71,16 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
                       <Tooltip key={index}>
                         <TooltipTrigger asChild>
                           <span className="inline-flex items-center cursor-help">
-                            <Circle className="h-5 w-5 inline-flex items-center justify-center fill-primary stroke-primary-foreground">
+                            <Circle 
+                              className="h-5 w-5 inline-flex items-center justify-center fill-primary stroke-primary text-primary-foreground"
+                              strokeWidth={0}
+                            >
                               <text
-                                x="50%"
-                                y="50%"
+                                x="12.5"
+                                y="12.5"
+                                dominantBaseline="middle"
                                 textAnchor="middle"
-                                fill="currentColor"
-                                className="text-xs font-medium"
-                                dy=".3em"
+                                className="text-xs font-medium fill-primary-foreground"
                               >
                                 {refNumber}
                               </text>
@@ -106,4 +108,3 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
     </div>
   );
 };
-

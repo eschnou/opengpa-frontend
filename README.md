@@ -1,69 +1,35 @@
-# Welcome to your Lovable project
+# OpenGPA - (Open) Agentic is all you need 😁
 
-## Project info
+[![Twitter Follow](https://img.shields.io/twitter/follow/opengpa?style=social)](https://twitter.com/opengpa) &ensp;
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**URL**: https://lovable.dev/projects/2e1aa24d-9715-48c4-be7a-2d6a98242a00
+**OpenGPA** is an Open-source General Purpose Agent. A self-hosted solution supporting smart AI agent developments
+with chain of thought, tool use and memory access through RAG.
 
-## How can I edit this code?
+## Documentation
 
-There are several ways of editing your application.
+Check the main [OpenGPA](https://github.com/eschnou/opengpa) for complete documentation on running this project.
 
-**Use Lovable**
+## Launching the UI
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2e1aa24d-9715-48c4-be7a-2d6a98242a00) and start prompting.
+### With docker
 
-Changes made via Lovable will be committed automatically to this repo.
+```
+docker build --build-arg -t opengpa-frontend:latest .
+docker run -p 8000:8000 opengpa-frontend
+```
 
-**Use your preferred IDE**
+### For development purposes
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```
+npm init
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Configuration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The following environment variables can be configured. See app.config.ts for details.
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/2e1aa24d-9715-48c4-be7a-2d6a98242a00) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+- VITE_SIGNUP_ENABLED default to "true" - is the signup form available
+- VITE_REQUIRE_INVITE_CODE default to "true" - ask for invites code (should be enforce on backend)
+- VITE_API_URL defaults to "http://localhost:3000" - the backend API URL

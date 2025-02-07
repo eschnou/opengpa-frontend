@@ -1,4 +1,3 @@
-
 import { TaskStepDTO } from "@/types/api";
 import ReactMarkdown from 'react-markdown';
 import {
@@ -31,7 +30,7 @@ const ReferenceIndicator = ({ number, chunk }: {
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className="inline-flex items-center justify-center cursor-help ml-1 bg-[#333333] w-5 h-5 rounded">
+        <span className="inline-flex items-center justify-center cursor-help ml-1 bg-[#333333] min-w-[1.5rem] h-6 px-1.5 rounded">
           <span className="text-[12px] font-semibold text-white">
             {number}
           </span>

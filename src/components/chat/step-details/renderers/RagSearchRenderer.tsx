@@ -31,7 +31,15 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
   // Replace [uuid] references with numbered references
   const processedContent = details.content.replace(
     /\[([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\]/g,
-    (_, uuid) => `[ref-${uuid}]`
+    (_, uuid) => {
+      const refNumber = chunkIndexMap.get(uuid);
+      if (!refNumber) return `[${uuid}]`;
+      
+      const chunk = details.chunks.find(c => c.id === uuid);
+      if (!chunk) return `[${uuid}]`;
+
+      return ` [#${refNumber}] `;
+    }
   );
 
   return (
@@ -46,20 +54,17 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
             text: ({ children }) => {
               if (typeof children !== 'string') return <>{children}</>;
               
-              // Replace [ref-uuid] with numbered references
-              const parts = children.split(/(\[ref-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\])/g);
+              // Replace [#number] with tooltip circles
+              const parts = children.split(/(\[#\d+\])/g);
               
               return (
                 <>
                   {parts.map((part, index) => {
-                    const match = part.match(/\[ref-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\]/);
+                    const match = part.match(/\[#(\d+)\]/);
                     if (!match) return part;
                     
-                    const uuid = match[1];
-                    const refNumber = chunkIndexMap.get(uuid);
-                    if (!refNumber) return part;
-                    
-                    const chunk = details.chunks.find(c => c.id === uuid);
+                    const refNumber = parseInt(match[1]);
+                    const chunk = details.chunks[refNumber - 1];
                     if (!chunk) return part;
 
                     return (
@@ -101,3 +106,4 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
     </div>
   );
 };
+

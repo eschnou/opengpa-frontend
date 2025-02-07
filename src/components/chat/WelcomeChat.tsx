@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import chatExamples from "@/config/chat-examples.json";
@@ -11,6 +12,7 @@ interface WelcomeChatProps {
   onExampleClick: (body: string) => void;
   attachedFile?: File | null;
   onFileAttach?: (file: File | null) => void;
+  isNewTask?: boolean;
 }
 
 export const WelcomeChat = ({
@@ -21,6 +23,7 @@ export const WelcomeChat = ({
   onExampleClick,
   attachedFile,
   onFileAttach,
+  isNewTask = true
 }: WelcomeChatProps) => {
   return (
     <main className="fixed left-64 top-16 right-0 bottom-0 bg-background overflow-hidden flex flex-col">
@@ -48,6 +51,7 @@ export const WelcomeChat = ({
             onSendMessage={onSendMessage}
             attachedFile={attachedFile}
             onFileAttach={onFileAttach}
+            isNewTask={isNewTask}
           />
         </div>
       </div>

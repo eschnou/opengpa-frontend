@@ -1,3 +1,4 @@
+
 import { MessageInput } from "./MessageInput";
 
 interface ChatInputProps {
@@ -8,11 +9,12 @@ interface ChatInputProps {
   onStopProcessing: () => void;
   attachedFile?: File | null;
   onFileAttach?: (file: File) => void;
+  isNewTask?: boolean;
 }
 
 export const ChatInput = (props: ChatInputProps) => {
   return (
-    <div className="p-4 border-t border-border">
+    <div className="p-4">
       <MessageInput {...props} />
     </div>
   );

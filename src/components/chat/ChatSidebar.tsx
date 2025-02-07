@@ -29,10 +29,10 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
   });
 
   return (
-    <aside
+    <div
       className={cn(
-        "glass fixed left-0 top-16 bottom-0 flex flex-col transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
+        "h-[calc(100vh-4rem)] flex flex-col transition-all duration-300 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        collapsed ? "w-12" : "w-64"
       )}
     >
       <div className="flex items-center justify-between p-4">
@@ -41,18 +41,32 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={onNewChat}
-            className="hover:bg-muted"
+            onClick={() => setCollapsed(!collapsed)}
+            className={cn(
+              "hover:bg-muted", 
+              collapsed && "absolute left-1/2 -translate-x-1/2 top-3"
+            )}
           >
-            <PlusCircle className="h-5 w-5" />
+            <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)}>
-            <ChevronLeft className={cn("h-5 w-5 transition-transform", collapsed && "rotate-180")} />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onNewChat}
+            className={cn(
+              "hover:bg-muted",
+              collapsed && "absolute left-1/2 -translate-x-1/2 top-12"
+            )}
+          >
+            <PlusCircle className="h-4 w-4" />
           </Button>
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto scrollbar-hidden">
+      <div className={cn(
+        "flex-1 overflow-y-auto scrollbar-hidden",
+        collapsed && "mt-20" // Reduced margin-top for better spacing
+      )}>
         {isLoading ? (
           <div className="p-4 text-muted-foreground">Loading tasks...</div>
         ) : tasks?.length === 0 ? (
@@ -62,12 +76,13 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
             <button
               key={task.id}
               className={cn(
-                "w-full p-3 hover:bg-muted flex items-center gap-3 transition-colors",
-                selectedTaskId === task.id && "bg-muted"
+                "w-full p-2 hover:bg-muted flex items-center gap-3 transition-colors",
+                selectedTaskId === task.id && "bg-muted",
+                collapsed && "justify-center" // Center icons when collapsed
               )}
               onClick={() => onTaskSelect(task.id)}
             >
-              <MessageSquare className="h-5 w-5 shrink-0" />
+              <MessageSquare className="h-4 w-4 shrink-0" />
               {!collapsed && (
                 <div className="text-left truncate">
                   <p className="truncate">{task.title || "Untitled Task"}</p>
@@ -80,6 +95,6 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
           ))
         )}
       </div>
-    </aside>
+    </div>
   );
 };

@@ -4,12 +4,15 @@ import { Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { httpClient } from "@/lib/http-client";
 import ReactMarkdown from 'react-markdown';
+import { cn } from "@/lib/utils";
 
 interface ChatStepRendererProps {
   step: TaskStepDTO;
+  onStepClick?: () => void;
+  isSelected?: boolean;
 }
 
-export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
+export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRendererProps) => {
   const { toast } = useToast();
 
   const handleDownload = async (taskId: string, documentId: string, filename: string) => {
@@ -19,15 +22,10 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
         responseType: 'blob'
       });
       
-      // Create a URL for the blob
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      
-      // Create a temporary link element
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', filename);
-      
-      // Append to body, click, and clean up
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
@@ -49,37 +47,50 @@ export const ChatStepRenderer = ({ step }: ChatStepRendererProps) => {
 
   return (
     <>
-      {/* Show user input if present */}
       {step.input && (
         <div className="max-w-[80%] p-4 rounded-lg bg-muted">
           {step.input}
         </div>
       )}
 
-      {/* Handle output_message actions */}
       {step.action?.name === "output_message" ? (
-        <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground prose prose-invert">
-          <ReactMarkdown>
+        <div 
+          className={cn(
+            "max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground prose prose-invert cursor-pointer transition-colors hover:bg-primary/90",
+            isSelected && "bg-primary/90"
+          )}
+          onClick={onStepClick}
+        >
+          <ReactMarkdown
+            components={{
+              a: ({ node, ...props }) => (
+                <a {...props} target="_blank" rel="noopener noreferrer" />
+              ),
+            }}
+          >
             {step.action.parameters?.message || step.result?.details || ''}
           </ReactMarkdown>
         </div>
       ) : (
-        /* For all other actions or no action, show the summary if available */
         step.result?.summary && (
-          <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-muted text-muted-foreground">
+          <div 
+            className={cn(
+              "max-w-[80%] ml-auto p-4 rounded-lg bg-muted text-muted-foreground cursor-pointer transition-colors hover:bg-muted/80",
+              isSelected && "bg-muted/80"
+            )}
+            onClick={onStepClick}
+          >
             {step.result.summary}
           </div>
         )
       )}
 
-      {/* Handle error messages */}
       {step.result?.error && (
         <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-destructive text-destructive-foreground">
           {step.result.error}
         </div>
       )}
 
-      {/* Display attached documents */}
       {step.documents && step.documents.length > 0 && (
         <div className="max-w-[80%] ml-auto mt-2 p-4 rounded-lg bg-muted">
           <h4 className="text-sm font-medium mb-2">Attached Documents:</h4>

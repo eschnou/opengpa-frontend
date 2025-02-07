@@ -18,6 +18,7 @@ interface MessageInputProps {
   className?: string;
   attachedFile?: File | null;
   onFileAttach?: (file: File) => void;
+  isNewTask?: boolean;
 }
 
 export const MessageInput = ({
@@ -28,7 +29,8 @@ export const MessageInput = ({
   onStopProcessing,
   className,
   attachedFile,
-  onFileAttach
+  onFileAttach,
+  isNewTask = false
 }: MessageInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -142,9 +144,9 @@ export const MessageInput = ({
 
   return (
     <div className={className}>
-      <div className="flex flex-col gap-2">
+      <div className={`flex flex-col gap-2 ${!isNewTask ? "border-t border-l border-r border-border rounded-t-lg bg-card/50" : ""}`}>
         {attachedFile && (
-          <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-md">
+          <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-md mx-3 mt-3">
             <Paperclip className="h-4 w-4" />
             <span className="text-sm truncate">{attachedFile.name}</span>
             <Button
@@ -157,7 +159,7 @@ export const MessageInput = ({
             </Button>
           </div>
         )}
-        <div className="flex gap-2 items-start">
+        <div className="flex gap-2 items-start p-3">
           <div className="flex gap-1.5">
             <Tooltip>
               <TooltipTrigger asChild>

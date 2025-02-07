@@ -1,10 +1,11 @@
+
 import { useState, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
 import { httpClient } from "@/lib/http-client";
 import { createTask, progressTask } from "@/services/task.service";
-import { uploadDocumentToWorkspace } from "@/services/document.service";
+import { workspaceService } from "@/services/workspace.service";
 
 const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
   console.log("Fetching steps for task:", taskId);
@@ -90,7 +91,6 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       
       if (currentStep.action?.final || currentStep.result?.final) {
         console.log("Task completed with final step");
-        // Invalidate both task and tasks queries to refresh the title
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ["task", taskId] }),
           queryClient.invalidateQueries({ queryKey: ["tasks"] })
@@ -107,7 +107,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     stopProcessingRef.current = false;
     setIsStopping(false);
     const currentMessage = message;
-    setMessage(""); // Clear the message immediately
+    setMessage("");
     
     try {
       console.log("Starting to process message...", { hasFile: !!attachedFile });
@@ -115,7 +115,6 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       let currentTaskId = taskId;
       
       if (!currentTaskId) {
-        // Create new task
         console.log("Creating new task...");
         const newTask = await createTask(currentMessage);
         console.log("Task created successfully:", newTask);
@@ -132,12 +131,12 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       if (attachedFile) {
         console.log("Uploading file...");
         try {
-          await uploadDocumentToWorkspace(currentTaskId, attachedFile);
+          await workspaceService.uploadDocument(currentTaskId, attachedFile);
           toast({
             title: "File uploaded",
             description: "Your file has been uploaded successfully.",
           });
-          setAttachedFile(null); // Clear the attached file after successful upload
+          setAttachedFile(null);
         } catch (error) {
           console.error("Error uploading file:", error);
           toast({

@@ -69,3 +69,20 @@ export interface Document {
   name: string;
   metadata: Record<string, string>;
 }
+
+export interface RagDocumentDTO {
+  id: string;
+  filename: string;
+  title: string;
+  description: string;
+  contentType: string;
+  progress: number;
+}
+
+export interface RagChunkDTO {
+  id: string;
+  documentId: string;
+  documentTitle: string;
+  documentDescription: string;
+  content: string;
+}

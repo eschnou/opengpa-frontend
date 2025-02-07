@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
+import Knowledge from "./pages/Knowledge";
+import DocumentDetails from "./pages/DocumentDetails";
 import { isAuthenticated } from "@/utils/token";
 
 const queryClient = new QueryClient();
@@ -44,6 +46,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/knowledge"
+              element={
+                <ProtectedRoute>
+                  <Knowledge />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/knowledge/:id"
+              element={
+                <ProtectedRoute>
+                  <DocumentDetails />
                 </ProtectedRoute>
               }
             />

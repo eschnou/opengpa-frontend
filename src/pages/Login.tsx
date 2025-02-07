@@ -137,7 +137,7 @@ const Login = () => {
         <div className="text-center">
           <div className="flex justify-center">
             <img
-              src="/lovable-uploads/f4f51fcf-0447-49c9-9d49-d57c4cd95d54.png"
+              src="/opengpa_logo_flat_transparent.png"
               alt="OpenGPA Logo"
               className="h-12 w-12"
             />

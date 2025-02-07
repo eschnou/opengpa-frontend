@@ -51,7 +51,7 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
       <div className="rounded-lg bg-muted p-4">
         <h3 className="text-sm font-medium mb-2">Input Text:</h3>
         <ReactMarkdown>
-          {step.action?.parameters?.text || ''}
+          {step.action?.parameters?.input || ''}
         </ReactMarkdown>
       </div>
 

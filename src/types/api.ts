@@ -3,6 +3,14 @@ export interface AuthRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  username: string;
+  name: string;
+  email: string;
+  password: string;
+  inviteCode?: string;
+}
+
 export interface AuthResponse {
   token: string;
   user: UserProfileDTO;

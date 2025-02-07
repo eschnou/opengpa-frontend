@@ -16,9 +16,16 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { authService } from "@/services/auth.service";
 import { useState } from "react";
-import type { AuthRequest } from "@/types/api";
+import type { AuthRequest, RegisterRequest } from "@/types/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-const formSchema = z.object({
+const loginFormSchema = z.object({
   username: z.string({
     required_error: "Username is required",
   }).min(3, "Username must be at least 3 characters").nonempty(),
@@ -27,20 +34,52 @@ const formSchema = z.object({
   }).min(6, "Password must be at least 6 characters").nonempty(),
 }) as z.ZodType<AuthRequest>;
 
+const registerFormSchema = z.object({
+  username: z.string()
+    .min(3, "Username must be at least 3 characters")
+    .max(50, "Username must be less than 50 characters")
+    .regex(/^[a-zA-Z0-9._-]+$/, "Username can only contain letters, numbers, and ._-"),
+  name: z.string()
+    .min(1, "Full name is required")
+    .max(100, "Name must be less than 100 characters")
+    .regex(/^[\p{L}\s'-]+$/u, "Name can only contain letters, spaces, hyphens and apostrophes"),
+  email: z.string()
+    .email("Invalid email address")
+    .max(255, "Email must be less than 255 characters")
+    .regex(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "Invalid email format"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters"),
+  ...(import.meta.env.VITE_REQUIRE_INVITE_CODE === "true"
+    ? { inviteCode: z.string().min(1, "Invite code is required") }
+    : {}),
+}) as z.ZodType<RegisterRequest>;
+
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
 
-  const form = useForm<AuthRequest>({
-    resolver: zodResolver(formSchema),
+  const loginForm = useForm<AuthRequest>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  const onSubmit = async (values: AuthRequest) => {
+  const registerForm = useForm<RegisterRequest>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      username: "",
+      name: "",
+      email: "",
+      password: "",
+      inviteCode: "",
+    },
+  });
+
+  const onLogin = async (values: AuthRequest) => {
     if (isLoading) return;
     
     setIsLoading(true);
@@ -60,7 +99,34 @@ const Login = () => {
         variant: "destructive",
         duration: 5000,
       });
-      form.setValue('password', '');
+      loginForm.setValue('password', '');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onRegister = async (values: RegisterRequest) => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await authService.register(values);
+      toast({
+        title: "Registration successful!",
+        description: "Welcome to OpenGPA",
+      });
+      setIsSignupOpen(false);
+      navigate("/");
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      const errorMessage = error.response?.data?.message || "Registration failed";
+      toast({
+        title: "Registration failed",
+        description: errorMessage,
+        variant: "destructive",
+        duration: 5000,
+      });
+      registerForm.setValue('password', '');
     } finally {
       setIsLoading(false);
     }
@@ -85,10 +151,10 @@ const Login = () => {
           </p>
         </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Form {...loginForm}>
+          <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-6">
             <FormField
-              control={form.control}
+              control={loginForm.control}
               name="username"
               render={({ field }) => (
                 <FormItem>
@@ -102,7 +168,7 @@ const Login = () => {
             />
 
             <FormField
-              control={form.control}
+              control={loginForm.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
@@ -120,6 +186,100 @@ const Login = () => {
             </Button>
           </form>
         </Form>
+
+        <div className="text-center">
+          <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
+            <DialogTrigger asChild>
+              <Button variant="link" className="text-sm">
+                Don't have an account? Sign up
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create an account</DialogTitle>
+              </DialogHeader>
+              <Form {...registerForm}>
+                <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
+                  <FormField
+                    control={registerForm.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input placeholder="johndoe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={registerForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={registerForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="john@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={registerForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="••••••" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {import.meta.env.VITE_REQUIRE_INVITE_CODE === "true" && (
+                    <FormField
+                      control={registerForm.control}
+                      name="inviteCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Invite Code</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter invite code" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Creating account..." : "Create account"}
+                  </Button>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </div>
   );

@@ -91,28 +91,24 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
   return (
     <div className="space-y-4">
       {paragraphsWithRefs.map((paragraph, index) => (
-        <div key={index} className="flex flex-wrap items-baseline gap-1">
-          <div className="flex-grow">
-            <ReactMarkdown
-              components={{
-                p: ({ children }) => <p className="inline">{children}</p>,
-                a: ({ node, ...props }) => (
-                  <a {...props} target="_blank" rel="noopener noreferrer" />
-                ),
-              }}
-            >
-              {paragraph.text}
-            </ReactMarkdown>
-          </div>
-          <div className="flex-shrink-0 flex items-center">
-            {paragraph.references.map((chunk) => (
-              <ReferenceIndicator 
-                key={chunk.id} 
-                number={chunkIndexMap.get(chunk.id) || 0}
-                chunk={chunk}
-              />
-            ))}
-          </div>
+        <div key={index} className="inline-flex items-baseline gap-1">
+          <ReactMarkdown
+            components={{
+              p: ({ children }) => <p className="inline">{children}</p>,
+              a: ({ node, ...props }) => (
+                <a {...props} target="_blank" rel="noopener noreferrer" />
+              ),
+            }}
+          >
+            {paragraph.text}
+          </ReactMarkdown>
+          {paragraph.references.map((chunk) => (
+            <ReferenceIndicator 
+              key={chunk.id} 
+              number={chunkIndexMap.get(chunk.id) || 0}
+              chunk={chunk}
+            />
+          ))}
         </div>
       ))}
     </div>

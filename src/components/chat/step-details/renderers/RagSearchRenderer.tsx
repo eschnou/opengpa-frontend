@@ -38,7 +38,7 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
       const chunk = details.chunks.find(c => c.id === uuid);
       if (!chunk) return `[${uuid}]`;
 
-      return ` [#${refNumber}] `;
+      return ` [#${refNumber}]`;
     }
   );
 
@@ -54,8 +54,8 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
             text: ({ children }) => {
               if (typeof children !== 'string') return <>{children}</>;
               
-              // Replace [#number] with tooltip circles
-              const parts = children.split(/(\[#\d+\])/g);
+              // Split the text by reference markers
+              const parts = children.split(/(\[#\d+\])/);
               
               return (
                 <>
@@ -68,33 +68,33 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
                     if (!chunk) return part;
 
                     return (
-                      <Tooltip key={index}>
-                        <TooltipTrigger asChild>
-                          <span className="inline-flex items-center cursor-help">
-                            <Circle 
-                              className="h-5 w-5 inline-flex items-center justify-center fill-primary stroke-primary text-primary-foreground"
-                              strokeWidth={0}
-                            >
-                              <text
-                                x="12.5"
-                                y="12.5"
-                                dominantBaseline="middle"
-                                textAnchor="middle"
-                                className="text-xs font-medium fill-primary-foreground"
+                      <span key={index} className="inline-flex items-center">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="inline-flex items-center cursor-help ml-1">
+                              <Circle 
+                                className="h-4 w-4 inline-flex items-center justify-center fill-primary stroke-primary text-primary-foreground"
+                                strokeWidth={0}
                               >
-                                {refNumber}
-                              </text>
-                            </Circle>
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-sm">
-                          <div className="space-y-2">
-                            <p className="font-medium">{chunk.documentTitle}</p>
-                            <p className="text-sm text-muted-foreground">{chunk.documentDescription}</p>
-                            <p className="text-sm border-t pt-2 mt-2">{chunk.content}</p>
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
+                                <text
+                                  x="8"
+                                  y="11"
+                                  className="text-[10px] font-medium fill-primary-foreground"
+                                >
+                                  {refNumber}
+                                </text>
+                              </Circle>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-sm">
+                            <div className="space-y-2">
+                              <p className="font-medium">{chunk.documentTitle}</p>
+                              <p className="text-sm text-muted-foreground">{chunk.documentDescription}</p>
+                              <p className="text-sm border-t pt-2 mt-2">{chunk.content}</p>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </span>
                     );
                   })}
                 </>

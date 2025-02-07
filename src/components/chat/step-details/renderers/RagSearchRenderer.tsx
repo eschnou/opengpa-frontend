@@ -1,7 +1,6 @@
 
 import { TaskStepDTO } from "@/types/api";
 import ReactMarkdown from 'react-markdown';
-import { Circle } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -32,21 +31,10 @@ const ReferenceIndicator = ({ number, chunk }: {
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className="inline-flex items-center cursor-help ml-1">
-          <Circle 
-            className="h-4 w-4 inline-flex items-center justify-center fill-primary stroke-primary text-primary-foreground"
-            strokeWidth={0}
-          >
-            <text
-              x="8"
-              y="11"
-              className="text-[10px] font-medium fill-primary-foreground"
-              dominantBaseline="middle"
-              textAnchor="middle"
-            >
-              {number}
-            </text>
-          </Circle>
+        <span className="inline-flex items-center justify-center cursor-help ml-1 bg-[#333333] w-5 h-5 rounded">
+          <span className="text-[12px] font-semibold text-white">
+            {number}
+          </span>
         </span>
       </TooltipTrigger>
       <TooltipContent className="max-w-sm">

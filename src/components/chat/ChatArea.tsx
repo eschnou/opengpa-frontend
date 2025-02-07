@@ -33,8 +33,6 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     handleSendMessage,
   } = useChat(taskId, onTaskCreated);
 
-  console.log('ChatArea render - steps:', steps);
-
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -76,7 +74,7 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
             </div>
           )}
           
-          {Array.isArray(steps) && steps?.map((step, index) => (
+          {steps?.map((step, index) => (
             <div key={`${step.id}-${index}`} className="space-y-4">
               <ChatStepRenderer 
                 step={step} 
@@ -135,4 +133,3 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     </div>
   );
 };
-

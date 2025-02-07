@@ -1,21 +1,26 @@
 # Build stage
-FROM node:20-alpine as builder
+FROM node:20-slim as builder
 
+# Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY bun.lockb ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
 
-# Build the application with default API URL
+# Build the application with default values
 ARG VITE_API_URL
+ARG VITE_SIGNUP_ENABLED
+ARG VITE_REQUIRE_INVITE_CODE
+
 ENV VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
+ENV VITE_SIGNUP_ENABLED=${VITE_SIGNUP_ENABLED:-false}
+ENV VITE_REQUIRE_INVITE_CODE=${VITE_REQUIRE_INVITE_CODE:-false}
 
 RUN npm run build
 
@@ -35,4 +40,5 @@ RUN chmod +x /docker-entrypoint.d/40-env.sh
 # Expose port 80
 EXPOSE 80
 
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { APP_CONFIG } from "@/config/app.config";
 
 const loginFormSchema = z.object({
   username: z.string({
@@ -48,7 +49,7 @@ const registerFormSchema = z.object({
     .regex(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "Invalid email format"),
   password: z.string()
     .min(8, "Password must be at least 8 characters"),
-  ...(import.meta.env.VITE_REQUIRE_INVITE_CODE === "true"
+  ...(APP_CONFIG.requireInviteCode
     ? { inviteCode: z.string().min(1, "Invite code is required") }
     : {}),
 }) as z.ZodType<RegisterRequest>;
@@ -186,7 +187,7 @@ const Login = () => {
           </form>
         </Form>
 
-        {import.meta.env.VITE_SIGNUP_ENABLED === "true" && (
+        {APP_CONFIG.signupEnabled && (
           <div className="text-center">
             <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
               <DialogTrigger asChild>
@@ -256,7 +257,7 @@ const Login = () => {
                       )}
                     />
 
-                    {import.meta.env.VITE_REQUIRE_INVITE_CODE === "true" && (
+                    {APP_CONFIG.requireInviteCode && (
                       <FormField
                         control={registerForm.control}
                         name="inviteCode"

@@ -1,5 +1,5 @@
 
-import { Settings, FileText, LogOut } from "lucide-react";
+import { Settings, FileText, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
@@ -26,6 +26,9 @@ export const TopNav = () => {
         <span className="font-semibold text-lg text-primary">OpenGPA</span>
       </div>
       <div className="flex items-center gap-2">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+          <Home className="h-5 w-5" />
+        </Button>
         <Button variant="ghost" size="icon">
           <FileText className="h-5 w-5" />
         </Button>

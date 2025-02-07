@@ -1,11 +1,12 @@
 
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
-import { Download, AlertOctagon } from "lucide-react";
+import { Download, Play, Pause } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { httpClient } from "@/lib/http-client";
 import ReactMarkdown from 'react-markdown';
 import { cn } from "@/lib/utils";
+import { useState, useRef } from "react";
 
 interface ChatStepRendererProps {
   step: TaskStepDTO;
@@ -15,6 +16,9 @@ interface ChatStepRendererProps {
 
 export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRendererProps) => {
   const { toast } = useToast();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
   const handleDownload = async (taskId: string, documentId: string, filename: string) => {
     console.log("Downloading document:", documentId, "from task:", taskId);
@@ -44,6 +48,43 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
         variant: "destructive",
       });
     }
+  };
+
+  const loadAudio = async (taskId: string, documentId: string) => {
+    try {
+      const response = await httpClient.get(`/api/tasks/${taskId}/documents/${documentId}`, {
+        responseType: 'blob'
+      });
+      
+      const url = URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
+      setAudioUrl(url);
+      
+      if (audioRef.current) {
+        audioRef.current.load();
+      }
+    } catch (error) {
+      console.error("Error loading audio:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load audio file. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const isAudioFile = (filename: string) => {
+    return filename.toLowerCase().endsWith('.mp3');
   };
 
   return (
@@ -111,16 +152,49 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
           <h4 className="text-sm font-medium mb-2">Attached Documents:</h4>
           <div className="space-y-2">
             {step.documents.map((doc) => (
-              <Button
-                key={doc.filename}
-                variant="outline"
-                size="sm"
-                className="w-full flex items-center justify-between"
-                onClick={() => handleDownload(doc.taskId, doc.filename, doc.filename)}
-              >
-                <span className="truncate">{doc.filename}</span>
-                <Download className="h-4 w-4 ml-2" />
-              </Button>
+              <div key={doc.filename} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center justify-between"
+                    onClick={() => handleDownload(doc.taskId, doc.filename, doc.filename)}
+                  >
+                    <span className="truncate">{doc.filename}</span>
+                    <Download className="h-4 w-4 ml-2" />
+                  </Button>
+                  
+                  {isAudioFile(doc.filename) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (!audioUrl) {
+                          loadAudio(doc.taskId, doc.filename);
+                        }
+                        togglePlayPause();
+                      }}
+                    >
+                      {isPlaying ? (
+                        <Pause className="h-4 w-4" />
+                      ) : (
+                        <Play className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
+                </div>
+                
+                {isAudioFile(doc.filename) && (
+                  <audio
+                    ref={audioRef}
+                    onEnded={() => setIsPlaying(false)}
+                    className="w-full"
+                    controls={false}
+                  >
+                    {audioUrl && <source src={audioUrl} type="audio/mpeg" />}
+                  </audio>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -128,3 +202,4 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
     </>
   );
 };
+

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export const TopNav = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ export const TopNav = () => {
         <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
           <Settings className="h-5 w-5" />
         </Button>
+        <ThemeToggle />
         <Button variant="ghost" size="icon" onClick={handleLogout}>
           <LogOut className="h-5 w-5" />
         </Button>

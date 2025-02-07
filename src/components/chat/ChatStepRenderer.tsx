@@ -1,7 +1,7 @@
 
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
-import { Download, Play, Pause } from "lucide-react";
+import { Download, Play, Pause, AlertOctagon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { httpClient } from "@/lib/http-client";
 import ReactMarkdown from 'react-markdown';

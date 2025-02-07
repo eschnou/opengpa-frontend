@@ -31,7 +31,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
   return (
     <div
       className={cn(
-        "h-[calc(100vh-4rem)] flex flex-col transition-all duration-300 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "h-[calc(100vh-4rem)] flex flex-col transition-all duration-300 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-r border-border",
         collapsed ? "w-12" : "w-64"
       )}
     >

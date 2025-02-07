@@ -60,7 +60,7 @@ export const RagSearchRenderer = ({ step }: { step: TaskStepDTO }) => {
               return (
                 <>
                   {parts.map((part, index) => {
-                    const match = part.match(/\[#(\d+)\])/);
+                    const match = part.match(/\[#(\d+)\]/);
                     if (!match) return part;
                     
                     const refNumber = parseInt(match[1]);

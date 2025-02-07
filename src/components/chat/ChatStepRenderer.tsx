@@ -1,6 +1,7 @@
+
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, AlertOctagon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { httpClient } from "@/lib/http-client";
 import ReactMarkdown from 'react-markdown';
@@ -56,11 +57,21 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
       {step.action?.name === "output_message" ? (
         <div 
           className={cn(
-            "max-w-[80%] ml-auto p-4 rounded-lg bg-primary text-primary-foreground prose prose-invert cursor-pointer transition-colors hover:bg-primary/90",
-            isSelected && "bg-primary/90"
+            "max-w-[80%] ml-auto p-4 rounded-lg",
+            step.result?.error 
+              ? "bg-destructive/10 text-foreground hover:bg-destructive/20" 
+              : "bg-primary text-primary-foreground hover:bg-primary/90",
+            isSelected && "bg-primary/90",
+            "cursor-pointer transition-colors"
           )}
           onClick={onStepClick}
         >
+          {step.result?.error && (
+            <div className="flex items-center gap-2 mb-2 text-destructive">
+              <AlertOctagon className="h-4 w-4" />
+              <span className="font-medium">Error</span>
+            </div>
+          )}
           <ReactMarkdown
             components={{
               a: ({ node, ...props }) => (
@@ -68,27 +79,31 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
               ),
             }}
           >
-            {step.action.parameters?.message || step.result?.details || ''}
+            {step.result?.error || step.action.parameters?.message || step.result?.details || ''}
           </ReactMarkdown>
         </div>
       ) : (
         step.result?.summary && (
           <div 
             className={cn(
-              "max-w-[80%] ml-auto p-4 rounded-lg bg-muted text-muted-foreground cursor-pointer transition-colors hover:bg-muted/80",
-              isSelected && "bg-muted/80"
+              "max-w-[80%] ml-auto p-4 rounded-lg",
+              step.result?.error 
+                ? "bg-destructive/10 text-foreground hover:bg-destructive/20" 
+                : "bg-muted text-muted-foreground hover:bg-muted/80",
+              isSelected && "bg-muted/80",
+              "cursor-pointer transition-colors"
             )}
             onClick={onStepClick}
           >
-            {step.result.summary}
+            {step.result?.error && (
+              <div className="flex items-center gap-2 mb-2 text-destructive">
+                <AlertOctagon className="h-4 w-4" />
+                <span className="font-medium">Error</span>
+              </div>
+            )}
+            {step.result.error || step.result.summary}
           </div>
         )
-      )}
-
-      {step.result?.error && (
-        <div className="max-w-[80%] ml-auto p-4 rounded-lg bg-destructive text-destructive-foreground">
-          {step.result.error}
-        </div>
       )}
 
       {step.documents && step.documents.length > 0 && (

@@ -66,25 +66,21 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
           )}
           onClick={onStepClick}
         >
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-2">
-              <ReactMarkdown
-                components={{
-                  a: ({ node, ...props }) => (
-                    <a {...props} target="_blank" rel="noopener noreferrer" />
-                  ),
-                }}
-              >
-                {step.action.parameters?.message || step.result?.details || ''}
-              </ReactMarkdown>
-              {step.result?.error && (
-                <div className="flex items-center gap-1 text-destructive text-sm shrink-0">
-                  <span className="font-medium">Error</span>
-                  <AlertOctagon className="h-4 w-4" />
-                </div>
-              )}
+          {step.result?.error && (
+            <div className="flex items-center gap-2 mb-2 text-destructive">
+              <AlertOctagon className="h-4 w-4" />
+              <span className="font-medium">Error</span>
             </div>
-          </div>
+          )}
+          <ReactMarkdown
+            components={{
+              a: ({ node, ...props }) => (
+                <a {...props} target="_blank" rel="noopener noreferrer" />
+              ),
+            }}
+          >
+            {step.result?.error || step.action.parameters?.message || step.result?.details || ''}
+          </ReactMarkdown>
         </div>
       ) : (
         step.result?.summary && (
@@ -99,17 +95,13 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
             )}
             onClick={onStepClick}
           >
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-2">
-                <div>{step.result.summary}</div>
-                {step.result?.error && (
-                  <div className="flex items-center gap-1 text-destructive text-sm shrink-0">
-                    <span className="font-medium">Error</span>
-                    <AlertOctagon className="h-4 w-4" />
-                  </div>
-                )}
+            {step.result?.error && (
+              <div className="flex items-center gap-2 mb-2 text-destructive">
+                <AlertOctagon className="h-4 w-4" />
+                <span className="font-medium">Error</span>
               </div>
-            </div>
+            )}
+            {step.result.error || step.result.summary}
           </div>
         )
       )}

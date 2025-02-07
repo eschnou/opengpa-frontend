@@ -66,12 +66,6 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
           )}
           onClick={onStepClick}
         >
-          {step.result?.error && (
-            <div className="flex items-center gap-2 mb-2 text-destructive">
-              <AlertOctagon className="h-4 w-4" />
-              <span className="font-medium">Error</span>
-            </div>
-          )}
           <ReactMarkdown
             components={{
               a: ({ node, ...props }) => (
@@ -79,8 +73,14 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
               ),
             }}
           >
-            {step.result?.error || step.action.parameters?.message || step.result?.details || ''}
+            {step.action.parameters?.message || step.result?.details || ''}
           </ReactMarkdown>
+          {step.result?.error && (
+            <div className="flex items-center gap-2 mt-2 text-destructive">
+              <AlertOctagon className="h-4 w-4" />
+              <span className="font-medium">Error: {step.result.error}</span>
+            </div>
+          )}
         </div>
       ) : (
         step.result?.summary && (
@@ -95,13 +95,13 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
             )}
             onClick={onStepClick}
           >
+            {step.result.summary}
             {step.result?.error && (
-              <div className="flex items-center gap-2 mb-2 text-destructive">
+              <div className="flex items-center gap-2 mt-2 text-destructive">
                 <AlertOctagon className="h-4 w-4" />
-                <span className="font-medium">Error</span>
+                <span className="font-medium">Error: {step.result.error}</span>
               </div>
             )}
-            {step.result.error || step.result.summary}
           </div>
         )
       )}

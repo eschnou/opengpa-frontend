@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { authService } from "@/services/auth.service";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { AuthRequest, RegisterRequest } from "@/types/api";
 import {
   Dialog,
@@ -24,6 +24,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { APP_CONFIG } from "@/config/app.config";
+
+console.log('Login component mounting, APP_CONFIG:', APP_CONFIG);
 
 const loginFormSchema = z.object({
   username: z.string({
@@ -55,10 +57,19 @@ const registerFormSchema = z.object({
 }) as z.ZodType<RegisterRequest>;
 
 const Login = () => {
+  console.log('Login component rendering');
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
+
+  useEffect(() => {
+    console.log('Login component mounted');
+    console.log('Current signup configuration:', {
+      signupEnabled: APP_CONFIG.signupEnabled,
+      requireInviteCode: APP_CONFIG.requireInviteCode
+    });
+  }, []);
 
   const loginForm = useForm<AuthRequest>({
     resolver: zodResolver(loginFormSchema),
@@ -80,11 +91,14 @@ const Login = () => {
   });
 
   const onLogin = async (values: AuthRequest) => {
+    console.log('Login attempt starting with username:', values.username);
     if (isLoading) return;
     
     setIsLoading(true);
     try {
+      console.log('Making login request to:', APP_CONFIG.apiUrl);
       const response = await authService.login(values);
+      console.log('Login response received:', response);
       toast({
         title: "Login successful!",
         description: `Welcome back ${response.user.name || response.user.username}`,

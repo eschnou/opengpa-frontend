@@ -69,7 +69,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
 
   const processTaskLoop = async (taskId: string, initialMessage?: string) => {
     let attempts = 0;
-    const MAX_ATTEMPTS = 5;
+    const MAX_ATTEMPTS = 10;
 
     while (attempts < MAX_ATTEMPTS) {
       if (stopProcessingRef.current) {

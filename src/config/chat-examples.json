@@ -1,16 +1,16 @@
 {
   "examples": [
     {
-      "title": "Create a user profile card",
-      "body": "Can you help me create a new React component for a user profile card? It should display the user's avatar, name, and bio."
+      "title": "Top stories on Hacker News",
+      "body": "Fetch the top three news (as ranked by points) on Hacker News front page (https://news.ycombinator.com/front). Read their content. Provide a summary of each news in a markdown file document."
     },
     {
-      "title": "Add form validation",
-      "body": "Help me implement form validation for my login page. I need to validate email format and ensure password meets security requirements."
+      "title": "Send an email",
+      "body": "Send an email to laurent@eschenaue.be, tell him how awesome OpenGPA is."
     },
     {
-      "title": "Implement dark mode",
-      "body": "Add a dark mode toggle to my application. It should persist the user's preference and apply appropriate styles."
+      "title": "Generate an Podcast of the Top News",
+      "body": "Look at the top news on https://www.bbc.com/news/world and generate a news style podcast with a news brief summary."
     }
   ]
 }

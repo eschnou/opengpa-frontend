@@ -1,3 +1,4 @@
+
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
 import { Download, AlertOctagon } from "lucide-react";
@@ -65,22 +66,24 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
           )}
           onClick={onStepClick}
         >
-          <div className="flex flex-col gap-1">
-            {step.result?.error && (
-              <div className="flex items-center gap-1 self-end text-destructive text-sm">
-                <span className="font-medium">Error</span>
-                <AlertOctagon className="h-4 w-4" />
-              </div>
-            )}
-            <ReactMarkdown
-              components={{
-                a: ({ node, ...props }) => (
-                  <a {...props} target="_blank" rel="noopener noreferrer" />
-                ),
-              }}
-            >
-              {step.action.parameters?.message || step.result?.details || ''}
-            </ReactMarkdown>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <ReactMarkdown
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a {...props} target="_blank" rel="noopener noreferrer" />
+                  ),
+                }}
+              >
+                {step.action.parameters?.message || step.result?.details || ''}
+              </ReactMarkdown>
+              {step.result?.error && (
+                <div className="flex items-center gap-1 text-destructive text-sm shrink-0">
+                  <span className="font-medium">Error</span>
+                  <AlertOctagon className="h-4 w-4" />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       ) : (
@@ -96,14 +99,16 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
             )}
             onClick={onStepClick}
           >
-            <div className="flex flex-col gap-1">
-              {step.result?.error && (
-                <div className="flex items-center gap-1 self-end text-destructive text-sm">
-                  <span className="font-medium">Error</span>
-                  <AlertOctagon className="h-4 w-4" />
-                </div>
-              )}
-              {step.result.summary}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-2">
+                <div>{step.result.summary}</div>
+                {step.result?.error && (
+                  <div className="flex items-center gap-1 text-destructive text-sm shrink-0">
+                    <span className="font-medium">Error</span>
+                    <AlertOctagon className="h-4 w-4" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )

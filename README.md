@@ -15,9 +15,11 @@ Check the main [OpenGPA](https://github.com/eschnou/opengpa) for complete docume
 ### With docker
 
 ```
-docker build --build-arg -t opengpa-frontend:latest .
+docker build --build-arg VITE_API_URL=http://localhost:3000 -t opengpa-frontend:latest .
 docker run -p 8000:8000 opengpa-frontend
 ```
+
+If you are running OpenGPA backend on an other server, update the VITE_API_URL to point to your instance.
 
 ### For development purposes
 
@@ -31,7 +33,7 @@ npm run dev
 The following environment variables can be configured. See app.config.ts for details.
 
 - VITE_SIGNUP_ENABLED default to "true" - is the signup form available
-- VITE_REQUIRE_INVITE_CODE default to "true" - ask for invites code (should be enforce on backend)
+- VITE_REQUIRE_INVITE_CODE default to "false" - ask for invites code (should also be enforced on backend)
 - VITE_API_URL defaults to "http://localhost:3000" - the backend API URL
 
 # License

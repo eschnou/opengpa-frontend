@@ -9,8 +9,13 @@
       "body": "Send an email to laurent@eschenauer.be, tell him how awesome OpenGPA is."
     },
     {
-      "title": "Generate an Podcast of the Top News",
-      "body": "Look at the top news on https://www.bbc.com/news/world and generate a news style podcast with a news brief summary."
+      "title": "Generate a Podcast of the Top News",
+      "body": "Look at the top news on https://www.bbc.com/news/world, pick the top three stories, generate a news brief in the style of a daily updates on PBS news. Use the tone of voice of a radio journalist presenting the show. Your listeners are worldwide audience eager to learn the latest news."
+    },
+    {
+      "title": "Collect data on top cryptocurrencies",
+      "body": "Lookup the top 5 crypto currencies by marketcap, generate a CSV file with their name, token symbol, market cap and today's price."
     }
   ]
 }
+

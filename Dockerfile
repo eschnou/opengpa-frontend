@@ -4,9 +4,17 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
-# Pass build-time env var
+
+# Define build arguments with default values
 ARG VITE_API_URL=http://localhost:3000
+ARG VITE_SIGNUP_ENABLED=true
+ARG VITE_REQUIRE_INVITE_CODE=false
+
+# Set them as environment variables during build
 ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_SIGNUP_ENABLED=${VITE_SIGNUP_ENABLED}
+ENV VITE_REQUIRE_INVITE_CODE=${VITE_REQUIRE_INVITE_CODE}
+
 RUN npm run build
 
 # Production stage

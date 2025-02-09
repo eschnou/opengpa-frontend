@@ -35,17 +35,10 @@ jobs:
         id: get_version
         run: |
           if [ -n "${{ github.event.inputs.version_override }}" ]; then
-            VERSION="${{ github.event.inputs.version_override }}"
+            echo "VERSION=${{ github.event.inputs.version_override }}" >> $GITHUB_OUTPUT
           else
-            VERSION=$(cat .version | tr -d '[:space:]' | tr -d '\n')
+            echo "VERSION=$(cat .version)" >> $GITHUB_OUTPUT
           fi
-          # Validate version format
-          if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Error: Invalid version format. Expected format: x.y.z (e.g., 0.3.0)"
-            exit 1
-          fi
-          echo "Using version: $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -65,12 +58,12 @@ jobs:
           context: .
           push: true
           tags: |
-            opengpa/frontend:latest
-            opengpa/frontend:${{ steps.get_version.outputs.VERSION }}
+            eschnou/opengpa-frontend:latest
+            eschnou/opengpa-frontend:${{ steps.get_version.outputs.VERSION }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             VITE_API_URL=${{ github.event.inputs.api_url }}
             VITE_SIGNUP_ENABLED=${{ github.event.inputs.signup_enabled }}
             VITE_REQUIRE_INVITE_CODE=${{ github.event.inputs.require_invite }}
-          cache-from: type=registry,ref=opengpa/frontend:buildcache
-          cache-to: type=registry,ref=opengpa/frontend:buildcache,mode=max
+          cache-from: type=registry,ref=eschnou/opengpa-frontend:buildcache
+          cache-to: type=registry,ref=eschnou/opengpa-frontend:buildcache,mode=max

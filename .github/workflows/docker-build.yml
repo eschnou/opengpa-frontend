@@ -1,0 +1,69 @@
+# .github/workflows/frontend-docker-build.yml
+name: Build and Push Frontend Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: 'Override version (leave empty to use .version file)'
+        required: false
+        type: string
+      api_url:
+        description: 'API URL'
+        required: true
+        default: 'http://localhost:3000'
+        type: string
+      signup_enabled:
+        description: 'Enable signup'
+        required: true
+        default: 'true'
+        type: boolean
+      require_invite:
+        description: 'Require invite code'
+        required: true
+        default: 'false'
+        type: boolean
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: get_version
+        run: |
+          if [ -n "${{ github.event.inputs.version_override }}" ]; then
+            echo "VERSION=${{ github.event.inputs.version_override }}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=$(cat .version)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            opengpa/frontend:latest
+            opengpa/frontend:${{ steps.get_version.outputs.VERSION }}
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            VITE_API_URL=${{ github.event.inputs.api_url }}
+            VITE_SIGNUP_ENABLED=${{ github.event.inputs.signup_enabled }}
+            VITE_REQUIRE_INVITE_CODE=${{ github.event.inputs.require_invite }}
+          cache-from: type=registry,ref=opengpa/frontend:buildcache
+          cache-to: type=registry,ref=opengpa/frontend:buildcache,mode=max

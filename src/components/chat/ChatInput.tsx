@@ -5,10 +5,10 @@ interface ChatInputProps {
   message: string;
   isProcessing: boolean;
   onMessageChange: (message: string) => void;
-  onSendMessage: (file?: File) => void;
+  onSendMessage: (files?: File[]) => void;
   onStopProcessing: () => void;
-  attachedFile?: File | null;
-  onFileAttach?: (file: File) => void;
+  attachedFiles?: File[] | null;
+  onFileAttach?: (files: File[] | null) => void;
   isNewTask?: boolean;
 }
 

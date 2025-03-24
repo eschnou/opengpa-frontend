@@ -1,3 +1,4 @@
+
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send, Square, Paperclip, Camera, X } from "lucide-react";
@@ -13,11 +14,11 @@ interface MessageInputProps {
   message: string;
   isProcessing: boolean;
   onMessageChange: (message: string) => void;
-  onSendMessage: (file?: File) => void;
+  onSendMessage: (files?: File[]) => void;
   onStopProcessing?: () => void;
   className?: string;
-  attachedFile?: File | null;
-  onFileAttach?: (file: File) => void;
+  attachedFiles?: File[] | null;
+  onFileAttach?: (files: File[] | null) => void;
   isNewTask?: boolean;
 }
 
@@ -28,7 +29,7 @@ export const MessageInput = ({
   onSendMessage,
   onStopProcessing,
   className,
-  attachedFile,
+  attachedFiles = [],
   onFileAttach,
   isNewTask = false
 }: MessageInputProps) => {
@@ -47,35 +48,53 @@ export const MessageInput = ({
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (!isProcessing && message.trim()) {
-        onSendMessage();
+      if (!isProcessing && (message.trim() || (attachedFiles && attachedFiles.length > 0))) {
+        onSendMessage(attachedFiles || []);
       }
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && onFileAttach) {
-      // Check file type
-      const fileType = file.name.split('.').pop()?.toLowerCase();
-      if (!['txt', 'csv', 'jpg', 'jpeg', 'png', 'pdf'].includes(fileType || '')) {
+    const files = e.target.files;
+    if (files && files.length > 0 && onFileAttach) {
+      const fileArray = Array.from(files);
+      
+      // Check file types
+      const invalidFiles = fileArray.filter(file => {
+        const fileType = file.name.split('.').pop()?.toLowerCase();
+        return !['txt', 'csv', 'jpg', 'jpeg', 'png', 'pdf'].includes(fileType || '');
+      });
+      
+      if (invalidFiles.length > 0) {
         toast({
-          title: "Invalid file type",
+          title: "Invalid file type(s)",
           description: "Only .txt, .csv, .jpg, .png and .pdf files are allowed",
           variant: "destructive",
         });
-        // Reset file input
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+        
+        // If there are some valid files, continue with those
+        if (invalidFiles.length < fileArray.length) {
+          const validFiles = fileArray.filter(file => {
+            const fileType = file.name.split('.').pop()?.toLowerCase();
+            return ['txt', 'csv', 'jpg', 'jpeg', 'png', 'pdf'].includes(fileType || '');
+          });
+          onFileAttach(validFiles);
         }
-        return;
+      } else {
+        // All files are valid
+        onFileAttach(fileArray);
       }
       
-      onFileAttach(file);
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    }
+  };
+
+  const handleClearFiles = () => {
+    if (onFileAttach) {
+      onFileAttach(null);
     }
   };
 
@@ -118,7 +137,8 @@ export const MessageInput = ({
       
       // Use existing file attachment logic
       if (onFileAttach) {
-        onFileAttach(file);
+        const currentFiles = attachedFiles || [];
+        onFileAttach([...currentFiles, file]);
         toast({
           title: "Screenshot captured",
           description: "Your screenshot has been attached successfully.",
@@ -142,21 +162,46 @@ export const MessageInput = ({
     }
   };
 
+  const removeFile = (index: number) => {
+    if (attachedFiles && onFileAttach) {
+      const newFiles = [...attachedFiles];
+      newFiles.splice(index, 1);
+      onFileAttach(newFiles.length > 0 ? newFiles : null);
+    }
+  };
+
   return (
     <div className={className}>
       <div className={`flex flex-col gap-2 ${!isNewTask ? "border-t border-l border-r border-border rounded-t-lg bg-card/50" : ""}`}>
-        {attachedFile && (
-          <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-md mx-3 mt-3">
-            <Paperclip className="h-4 w-4" />
-            <span className="text-sm truncate">{attachedFile.name}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-4 w-4 ml-auto hover:bg-background/50"
-              onClick={() => onFileAttach?.(null as any)}
-            >
-              <X className="h-3 w-3" />
-            </Button>
+        {attachedFiles && attachedFiles.length > 0 && (
+          <div className="flex flex-col gap-2 px-3 pt-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">{attachedFiles.length} file{attachedFiles.length !== 1 ? 's' : ''} attached</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs h-7 px-2"
+                onClick={handleClearFiles}
+              >
+                Clear all
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+              {attachedFiles.map((file, index) => (
+                <div key={index} className="flex items-center gap-2 px-3 py-2 bg-muted rounded-md">
+                  <Paperclip className="h-3 w-3 flex-shrink-0" />
+                  <span className="text-xs truncate max-w-44">{file.name}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-4 w-4 ml-1 hover:bg-background/50"
+                    onClick={() => removeFile(index)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
         <div className="flex gap-2 items-start p-3">
@@ -173,7 +218,7 @@ export const MessageInput = ({
                   <Paperclip className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Attach .txt, .csv, .jpg, .png or .pdf file</TooltipContent>
+              <TooltipContent>Attach files (.txt, .csv, .jpg, .png or .pdf)</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -207,6 +252,7 @@ export const MessageInput = ({
               onChange={handleFileChange}
               className="hidden"
               accept=".txt,.csv,.jpg,.jpeg,.png,.pdf"
+              multiple
             />
             <div className="absolute right-2 bottom-1.5">
               {isProcessing && onStopProcessing ? (
@@ -229,8 +275,8 @@ export const MessageInput = ({
                     <Button 
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => onSendMessage()}
-                      disabled={isProcessing || !message.trim()}
+                      onClick={() => onSendMessage(attachedFiles || [])}
+                      disabled={isProcessing || (!message.trim() && (!attachedFiles || attachedFiles.length === 0))}
                     >
                       <Send className="h-4 w-4" />
                     </Button>

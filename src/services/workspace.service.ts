@@ -14,5 +14,29 @@ export const workspaceService = {
     });
     
     return response.data;
+  },
+  
+  uploadMultipleDocuments: async (taskId: string, files: File[]): Promise<Document[]> => {
+    if (files.length === 0) {
+      return [];
+    }
+    
+    if (files.length === 1) {
+      // Single file upload uses the existing method
+      const document = await workspaceService.uploadDocument(taskId, files[0]);
+      return [document];
+    }
+    
+    // Multiple file upload handling
+    const uploadPromises = files.map(file => {
+      return workspaceService.uploadDocument(taskId, file);
+    });
+    
+    try {
+      return await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error("Error uploading multiple files:", error);
+      throw error;
+    }
   }
 };

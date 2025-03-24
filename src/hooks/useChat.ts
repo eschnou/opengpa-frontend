@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -23,10 +22,11 @@ const fetchTask = async (taskId: string): Promise<TaskDTO> => {
 
 export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => void) => {
   const [message, setMessage] = useState("");
-  const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<File[] | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
   const [isAwaitingInput, setIsAwaitingInput] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const stopProcessingRef = useRef(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -49,21 +49,37 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     setIsStopping(true);
   };
 
-  const handleFileAttachment = (file: File | null) => {
-    console.log("Handling file attachment:", file?.name);
-    if (file && file.size > 10 * 1024 * 1024) { // 10MB limit
-      toast({
-        title: "File too large",
-        description: "Please select a file smaller than 10MB",
-        variant: "destructive",
-      });
+  const handleFileAttachment = (files: File[] | null) => {
+    console.log("Handling file attachment:", files?.length);
+    
+    if (!files) {
+      setAttachedFiles(null);
       return;
     }
-    setAttachedFile(file);
-    if (file) {
+    
+    const oversizedFiles = files.filter(file => file.size > 10 * 1024 * 1024); // 10MB limit
+    
+    if (oversizedFiles.length > 0) {
       toast({
-        title: "File attached",
-        description: "Your file has been attached and will be uploaded when you send your message.",
+        title: "Files too large",
+        description: `${oversizedFiles.length} file(s) exceed the 10MB limit and were removed`,
+        variant: "destructive",
+      });
+      
+      const validFiles = files.filter(file => file.size <= 10 * 1024 * 1024);
+      setAttachedFiles(validFiles.length > 0 ? validFiles : null);
+      
+      if (validFiles.length > 0) {
+        toast({
+          title: "Files attached",
+          description: `${validFiles.length} file(s) will be uploaded when you send your message.`,
+        });
+      }
+    } else {
+      setAttachedFiles(files);
+      toast({
+        title: "Files attached",
+        description: `${files.length} file(s) will be uploaded when you send your message.`,
       });
     }
   };
@@ -90,7 +106,6 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       
       await queryClient.invalidateQueries({ queryKey: ["taskSteps", taskId] });
       
-      // Check if we need to wait for user input
       if (currentStep.result?.status === "AWAITING_INPUT") {
         console.log("Task is awaiting user input");
         setIsAwaitingInput(true);
@@ -129,7 +144,6 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       const step = await progressTaskWithStateData(taskId, stateData);
       await queryClient.invalidateQueries({ queryKey: ["taskSteps", taskId] });
       
-      // Check if this was the final step
       if (step.action?.final || step.result?.final) {
         console.log("Task completed with final step after input confirmation");
         await Promise.all([
@@ -140,7 +154,6 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         return;
       }
       
-      // Continue processing if not awaiting more input
       if (step.result?.status !== "AWAITING_INPUT") {
         await processTaskLoop(taskId);
       } else {
@@ -174,7 +187,6 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     setIsAwaitingInput(false);
     
     try {
-      // Send an empty payload (no message, no stateData)
       const step = await progressTaskWithEmptyPayload(taskId);
       await queryClient.invalidateQueries({ queryKey: ["taskSteps", taskId] });
       
@@ -195,8 +207,10 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     }
   };
 
-  const handleSendMessage = async () => {
-    if ((!message.trim() && !attachedFile) || isProcessing) return;
+  const handleSendMessage = async (files?: File[]) => {
+    const filesToUpload = files || attachedFiles || [];
+    
+    if ((!message.trim() && filesToUpload.length === 0) || isProcessing) return;
 
     setIsProcessing(true);
     stopProcessingRef.current = false;
@@ -205,7 +219,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     setMessage("");
     
     try {
-      console.log("Starting to process message...", { hasFile: !!attachedFile });
+      console.log("Starting to process message...", { fileCount: filesToUpload.length });
       
       let currentTaskId = taskId;
       
@@ -222,23 +236,28 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         }
       }
 
-      // Upload file if attached
-      if (attachedFile) {
-        console.log("Uploading file...");
+      if (filesToUpload.length > 0) {
+        console.log(`Uploading ${filesToUpload.length} file(s)...`);
+        
         try {
-          await workspaceService.uploadDocument(currentTaskId, attachedFile);
+          setUploadProgress(0);
+          const uploadedDocs = await workspaceService.uploadMultipleDocuments(currentTaskId, filesToUpload);
+          
           toast({
-            title: "File uploaded",
-            description: "Your file has been uploaded successfully.",
+            title: "Files uploaded",
+            description: `${uploadedDocs.length} file(s) uploaded successfully.`,
           });
-          setAttachedFile(null);
+          
+          setAttachedFiles(null);
+          setUploadProgress(100);
         } catch (error) {
-          console.error("Error uploading file:", error);
+          console.error("Error uploading files:", error);
           toast({
             title: "Upload failed",
-            description: "Failed to upload file. Please try again.",
+            description: "Failed to upload one or more files. Please try again.",
             variant: "destructive",
           });
+          setIsProcessing(false);
           return;
         }
       }
@@ -257,17 +276,19 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       }
       stopProcessingRef.current = false;
       setIsStopping(false);
+      setUploadProgress(0);
     }
   };
 
   return {
     message,
     setMessage,
-    attachedFile,
+    attachedFiles,
     handleFileAttachment,
     isProcessing,
     isStopping,
     isAwaitingInput,
+    uploadProgress,
     task,
     steps,
     isLoading,

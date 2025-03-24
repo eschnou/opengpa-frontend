@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
 import { httpClient } from "@/lib/http-client";
-import { createTask, progressTask, progressTaskWithStateData } from "@/services/task.service";
+import { createTask, progressTask, progressTaskWithStateData, progressTaskWithEmptyPayload } from "@/services/task.service";
 import { workspaceService } from "@/services/workspace.service";
 
 const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
@@ -158,13 +158,41 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     }
   };
 
-  const handleCancelInput = () => {
-    console.log("Input cancelled by user");
+  const handleCancelInput = async () => {
+    if (!taskId) {
+      console.error("Cannot cancel input: taskId is undefined");
+      toast({
+        title: "Error",
+        description: "Cannot cancel without a valid task ID",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    console.log("Input cancelled by user, sending empty payload");
+    setIsProcessing(true);
     setIsAwaitingInput(false);
-    toast({
-      title: "Input cancelled",
-      description: "You can continue the conversation by sending a new message.",
-    });
+    
+    try {
+      // Send an empty payload (no message, no stateData)
+      const step = await progressTaskWithEmptyPayload(taskId);
+      await queryClient.invalidateQueries({ queryKey: ["taskSteps", taskId] });
+      
+      toast({
+        title: "Input cancelled",
+        description: "You can continue the conversation by sending a new message.",
+      });
+      
+      setIsProcessing(false);
+    } catch (error) {
+      console.error("Error cancelling input:", error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel. Please try again.",
+        variant: "destructive",
+      });
+      setIsProcessing(false);
+    }
   };
 
   const handleSendMessage = async () => {

@@ -40,3 +40,15 @@ export const progressTaskWithStateData = async (taskId: string, stateData: Recor
   console.log("Task progressed with stateData:", response.data);
   return response.data;
 };
+
+export const progressTaskWithEmptyPayload = async (taskId: string): Promise<TaskStepDTO> => {
+  if (!taskId) {
+    console.error("Cannot progress task with empty payload: taskId is undefined");
+    throw new Error("Task ID is required to progress a task with empty payload");
+  }
+  
+  console.log("Progressing task with empty payload:", taskId);
+  const response = await httpClient.post(`/api/tasks/${taskId}`, {});
+  console.log("Task progressed with empty payload:", response.data);
+  return response.data;
+};

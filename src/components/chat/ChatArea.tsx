@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from "react";
 import { ChatStepRenderer } from "./ChatStepRenderer";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -40,12 +41,12 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     }
   }, [steps, isProcessing]);
 
-  const onConfirmInput = (step: TaskStepDTO, stateData: Record<string, string>) => {
-    if (!step.taskId) {
-      console.error("Cannot confirm input: step has no taskId");
+  const onConfirmInput = (stateData: Record<string, string>) => {
+    if (!taskId) {
+      console.error("Cannot confirm input: taskId is undefined");
       return;
     }
-    handleConfirmInput(step.taskId, stateData);
+    handleConfirmInput(taskId, stateData);
   };
 
   if (!taskId) {

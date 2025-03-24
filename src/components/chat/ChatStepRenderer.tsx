@@ -12,7 +12,7 @@ interface ChatStepRendererProps {
   step: TaskStepDTO;
   onStepClick?: () => void;
   isSelected?: boolean;
-  onConfirmInput?: (step: TaskStepDTO, stateData: Record<string, string>) => void;
+  onConfirmInput?: (stateData: Record<string, string>) => void;
   onCancelInput?: () => void;
 }
 
@@ -95,7 +95,6 @@ export const ChatStepRenderer = ({
     return filename.toLowerCase().endsWith('.mp3');
   };
 
-  // Render awaiting input form if needed
   if (step.result?.status === "AWAITING_INPUT" && step.result.stateData && onConfirmInput && onCancelInput) {
     return (
       <>
@@ -109,7 +108,7 @@ export const ChatStepRenderer = ({
           step={step} 
           onConfirm={(stateData) => {
             if (onConfirmInput) {
-              onConfirmInput(step, stateData);
+              onConfirmInput(stateData);
             }
           }} 
           onCancel={onCancelInput}

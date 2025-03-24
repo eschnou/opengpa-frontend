@@ -1,9 +1,10 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Send, Square, Paperclip, Camera, X } from "lucide-react";
+import { Send, Square, Paperclip, Camera, X, Loader2 } from "lucide-react";
 import { KeyboardEvent, useRef, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
+import { Progress } from "@/components/ui/progress";
 import {
   Tooltip,
   TooltipContent,
@@ -13,6 +14,8 @@ import {
 interface MessageInputProps {
   message: string;
   isProcessing: boolean;
+  isUploading?: boolean;
+  uploadProgress?: number;
   onMessageChange: (message: string) => void;
   onSendMessage: (files?: File[]) => void;
   onStopProcessing?: () => void;
@@ -25,6 +28,8 @@ interface MessageInputProps {
 export const MessageInput = ({
   message,
   isProcessing,
+  isUploading = false,
+  uploadProgress = 0,
   onMessageChange,
   onSendMessage,
   onStopProcessing,
@@ -204,6 +209,19 @@ export const MessageInput = ({
             </div>
           </div>
         )}
+        
+        {isUploading && (
+          <div className="px-3 pt-2">
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-muted-foreground">Uploading files...</span>
+                <span className="text-xs font-medium">{uploadProgress}%</span>
+              </div>
+              <Progress value={uploadProgress} className="h-1.5" />
+            </div>
+          </div>
+        )}
+        
         <div className="flex gap-2 items-start p-3">
           <div className="flex gap-1.5">
             <Tooltip>
@@ -212,7 +230,7 @@ export const MessageInput = ({
                   variant="outline" 
                   size="icon"
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isProcessing}
+                  disabled={isProcessing || isUploading}
                   className="hover:bg-muted h-[44px] w-[44px]"
                 >
                   <Paperclip className="h-5 w-5" />
@@ -226,7 +244,7 @@ export const MessageInput = ({
                   variant="outline" 
                   size="icon"
                   onClick={handleScreenshot}
-                  disabled={isProcessing}
+                  disabled={isProcessing || isUploading}
                   className="hover:bg-muted h-[44px] w-[44px]"
                 >
                   <Camera className="h-5 w-5" />
@@ -255,20 +273,31 @@ export const MessageInput = ({
               multiple
             />
             <div className="absolute right-2 bottom-1.5">
-              {isProcessing && onStopProcessing ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="destructive"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={onStopProcessing}
-                    >
-                      <Square className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Stop processing</TooltipContent>
-                </Tooltip>
+              {isProcessing ? (
+                isUploading ? (
+                  <Button 
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 cursor-not-allowed"
+                    disabled
+                  >
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  </Button>
+                ) : onStopProcessing ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="destructive"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={onStopProcessing}
+                      >
+                        <Square className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Stop processing</TooltipContent>
+                  </Tooltip>
+                ) : null
               ) : (
                 <Tooltip>
                   <TooltipTrigger asChild>

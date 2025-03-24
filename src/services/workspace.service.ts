@@ -16,27 +16,30 @@ export const workspaceService = {
     return response.data;
   },
   
-  uploadMultipleDocuments: async (taskId: string, files: File[]): Promise<Document[]> => {
+  uploadMultipleDocuments: async (taskId: string, files: File[], onProgress?: (progress: number) => void): Promise<Document[]> => {
     if (files.length === 0) {
       return [];
     }
     
-    if (files.length === 1) {
-      // Single file upload uses the existing method
-      const document = await workspaceService.uploadDocument(taskId, files[0]);
-      return [document];
+    // Sequential upload instead of parallel to prevent race conditions
+    const documents: Document[] = [];
+    
+    for (let i = 0; i < files.length; i++) {
+      try {
+        const document = await workspaceService.uploadDocument(taskId, files[i]);
+        documents.push(document);
+        
+        // Calculate and report progress if callback is provided
+        if (onProgress) {
+          const progress = Math.round(((i + 1) / files.length) * 100);
+          onProgress(progress);
+        }
+      } catch (error) {
+        console.error(`Error uploading file ${files[i].name}:`, error);
+        throw error; // Re-throw to handle in the calling function
+      }
     }
     
-    // Multiple file upload handling
-    const uploadPromises = files.map(file => {
-      return workspaceService.uploadDocument(taskId, file);
-    });
-    
-    try {
-      return await Promise.all(uploadPromises);
-    } catch (error) {
-      console.error("Error uploading multiple files:", error);
-      throw error;
-    }
+    return documents;
   }
 };

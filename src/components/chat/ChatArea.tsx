@@ -25,6 +25,8 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     attachedFiles,
     handleFileAttachment,
     isProcessing,
+    isUploading,
+    uploadProgress,
     task,
     steps,
     isLoading,
@@ -96,7 +98,7 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
             </div>
           ))}
 
-          {isProcessing && <LoadingIndicator stopping={isStopping} />}
+          {isProcessing && <LoadingIndicator stopping={isStopping} uploading={isUploading} progress={uploadProgress} />}
         </>
       )}
     </div>
@@ -107,6 +109,8 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
       <ChatInput
         message={message}
         isProcessing={isProcessing}
+        isUploading={isUploading}
+        uploadProgress={uploadProgress}
         onMessageChange={setMessage}
         onSendMessage={handleSendMessage}
         onStopProcessing={handleStopProcessing}

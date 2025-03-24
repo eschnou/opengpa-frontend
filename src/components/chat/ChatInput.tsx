@@ -4,6 +4,8 @@ import { MessageInput } from "./MessageInput";
 interface ChatInputProps {
   message: string;
   isProcessing: boolean;
+  isUploading?: boolean;
+  uploadProgress?: number;
   onMessageChange: (message: string) => void;
   onSendMessage: (files?: File[]) => void;
   onStopProcessing: () => void;

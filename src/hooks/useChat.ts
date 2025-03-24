@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+
+import { useState, useRef, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
@@ -24,6 +25,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
   const [message, setMessage] = useState("");
   const [attachedFiles, setAttachedFiles] = useState<File[] | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
   const [isAwaitingInput, setIsAwaitingInput] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -213,6 +215,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     if ((!message.trim() && filesToUpload.length === 0) || isProcessing) return;
 
     setIsProcessing(true);
+    setIsUploading(filesToUpload.length > 0);
     stopProcessingRef.current = false;
     setIsStopping(false);
     const currentMessage = message;
@@ -236,12 +239,21 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         }
       }
 
+      // Upload all files first before sending the message
       if (filesToUpload.length > 0) {
-        console.log(`Uploading ${filesToUpload.length} file(s)...`);
+        console.log(`Uploading ${filesToUpload.length} file(s) sequentially...`);
+        setUploadProgress(0);
         
         try {
-          setUploadProgress(0);
-          const uploadedDocs = await workspaceService.uploadMultipleDocuments(currentTaskId, filesToUpload);
+          // Use the progress callback to update UI
+          const uploadedDocs = await workspaceService.uploadMultipleDocuments(
+            currentTaskId, 
+            filesToUpload,
+            (progress) => {
+              setUploadProgress(progress);
+              console.log(`Upload progress: ${progress}%`);
+            }
+          );
           
           toast({
             title: "Files uploaded",
@@ -258,10 +270,13 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
             variant: "destructive",
           });
           setIsProcessing(false);
+          setIsUploading(false);
           return;
         }
       }
 
+      // Files are now guaranteed to be uploaded before proceeding
+      setIsUploading(false);
       await processTaskLoop(currentTaskId, currentMessage);
     } catch (error) {
       console.error("Error processing task:", error);
@@ -274,6 +289,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       if (!isAwaitingInput) {
         setIsProcessing(false);
       }
+      setIsUploading(false);
       stopProcessingRef.current = false;
       setIsStopping(false);
       setUploadProgress(0);
@@ -286,6 +302,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     attachedFiles,
     handleFileAttachment,
     isProcessing,
+    isUploading,
     isStopping,
     isAwaitingInput,
     uploadProgress,

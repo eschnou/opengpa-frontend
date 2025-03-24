@@ -31,6 +31,8 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     isStopping,
     handleStopProcessing,
     handleSendMessage,
+    handleConfirmInput,
+    handleCancelInput,
   } = useChat(taskId, onTaskCreated);
 
   useEffect(() => {
@@ -80,6 +82,8 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
                 step={step} 
                 onStepClick={() => onStepSelect(step)}
                 isSelected={selectedStep?.id === step.id}
+                onConfirmInput={handleConfirmInput}
+                onCancelInput={handleCancelInput}
               />
             </div>
           ))}

@@ -1,3 +1,4 @@
+
 import { httpClient } from "@/lib/http-client";
 import { TaskDTO, TaskStepDTO } from "@/types/api";
 
@@ -18,5 +19,14 @@ export const progressTask = async (taskId: string, message?: string): Promise<Ta
     message: message || "" // Send empty string if no message provided
   });
   console.log("Task progressed:", response.data);
+  return response.data;
+};
+
+export const progressTaskWithStateData = async (taskId: string, stateData: Record<string, string>): Promise<TaskStepDTO> => {
+  console.log("Progressing task with stateData:", taskId, stateData);
+  const response = await httpClient.post(`/api/tasks/${taskId}`, {
+    stateData: stateData
+  });
+  console.log("Task progressed with stateData:", response.data);
   return response.data;
 };

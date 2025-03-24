@@ -7,14 +7,23 @@ import { httpClient } from "@/lib/http-client";
 import ReactMarkdown from 'react-markdown';
 import { cn } from "@/lib/utils";
 import { useState, useRef } from "react";
+import { AwaitingInputForm } from "./AwaitingInputForm";
 
 interface ChatStepRendererProps {
   step: TaskStepDTO;
   onStepClick?: () => void;
   isSelected?: boolean;
+  onConfirmInput?: (taskId: string, stateData: Record<string, string>) => void;
+  onCancelInput?: () => void;
 }
 
-export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRendererProps) => {
+export const ChatStepRenderer = ({ 
+  step, 
+  onStepClick, 
+  isSelected,
+  onConfirmInput,
+  onCancelInput
+}: ChatStepRendererProps) => {
   const { toast } = useToast();
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -86,6 +95,25 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
   const isAudioFile = (filename: string) => {
     return filename.toLowerCase().endsWith('.mp3');
   };
+
+  // Render awaiting input form if needed
+  if (step.result?.status === "AWAITING_INPUT" && step.result.stateData && onConfirmInput && onCancelInput) {
+    return (
+      <>
+        {step.input && (
+          <div className="max-w-[80%] p-4 rounded-lg bg-muted">
+            {step.input}
+          </div>
+        )}
+        
+        <AwaitingInputForm 
+          step={step} 
+          onConfirm={(stateData) => onConfirmInput(step.taskId, stateData)} 
+          onCancel={onCancelInput}
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -202,4 +230,3 @@ export const ChatStepRenderer = ({ step, onStepClick, isSelected }: ChatStepRend
     </>
   );
 };
-

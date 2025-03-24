@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { TaskStepDTO, TaskDTO } from "@/types/api";
 import { httpClient } from "@/lib/http-client";
-import { createTask, progressTask } from "@/services/task.service";
+import { createTask, progressTask, progressTaskWithStateData } from "@/services/task.service";
 import { workspaceService } from "@/services/workspace.service";
 
 const fetchTaskSteps = async (taskId: string): Promise<TaskStepDTO[]> => {
@@ -26,6 +26,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
+  const [isAwaitingInput, setIsAwaitingInput] = useState(false);
   const stopProcessingRef = useRef(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -89,6 +90,14 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
       
       await queryClient.invalidateQueries({ queryKey: ["taskSteps", taskId] });
       
+      // Check if we need to wait for user input
+      if (currentStep.result?.status === "AWAITING_INPUT") {
+        console.log("Task is awaiting user input");
+        setIsAwaitingInput(true);
+        setIsProcessing(false);
+        return; // Exit the loop and wait for user confirmation
+      }
+      
       if (currentStep.action?.final || currentStep.result?.final) {
         console.log("Task completed with final step");
         await Promise.all([
@@ -98,6 +107,53 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         break;
       }
     }
+  };
+
+  const handleConfirmInput = async (taskId: string, stateData: Record<string, string>) => {
+    console.log("Confirming input with state data:", stateData);
+    setIsProcessing(true);
+    setIsAwaitingInput(false);
+    
+    try {
+      const step = await progressTaskWithStateData(taskId, stateData);
+      await queryClient.invalidateQueries({ queryKey: ["taskSteps", taskId] });
+      
+      // Check if this was the final step
+      if (step.action?.final || step.result?.final) {
+        console.log("Task completed with final step after input confirmation");
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["task", taskId] }),
+          queryClient.invalidateQueries({ queryKey: ["tasks"] })
+        ]);
+        setIsProcessing(false);
+        return;
+      }
+      
+      // Continue processing if not awaiting more input
+      if (step.result?.status !== "AWAITING_INPUT") {
+        await processTaskLoop(taskId);
+      } else {
+        setIsAwaitingInput(true);
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error("Error confirming input:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process your input. Please try again.",
+        variant: "destructive",
+      });
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCancelInput = () => {
+    console.log("Input cancelled by user");
+    setIsAwaitingInput(false);
+    toast({
+      title: "Input cancelled",
+      description: "You can continue the conversation by sending a new message.",
+    });
   };
 
   const handleSendMessage = async () => {
@@ -157,7 +213,9 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         variant: "destructive",
       });
     } finally {
-      setIsProcessing(false);
+      if (!isAwaitingInput) {
+        setIsProcessing(false);
+      }
       stopProcessingRef.current = false;
       setIsStopping(false);
     }
@@ -170,10 +228,13 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     handleFileAttachment,
     isProcessing,
     isStopping,
+    isAwaitingInput,
     task,
     steps,
     isLoading,
     handleStopProcessing,
     handleSendMessage,
+    handleConfirmInput,
+    handleCancelInput,
   };
 };

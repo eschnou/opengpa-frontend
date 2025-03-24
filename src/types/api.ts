@@ -1,3 +1,4 @@
+
 export interface AuthRequest {
   username: string;
   password: string;
@@ -47,6 +48,7 @@ export interface ResultDTO {
   error?: string;
   message?: string;
   final?: boolean;
+  stateData?: Record<string, string>; // Added stateData for AWAITING_INPUT status
 }
 
 export interface DocumentDTO {

@@ -1,4 +1,3 @@
-
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
 import { Download, Play, Pause, AlertOctagon } from "lucide-react";
@@ -13,7 +12,7 @@ interface ChatStepRendererProps {
   step: TaskStepDTO;
   onStepClick?: () => void;
   isSelected?: boolean;
-  onConfirmInput?: (taskId: string, stateData: Record<string, string>) => void;
+  onConfirmInput?: (step: TaskStepDTO, stateData: Record<string, string>) => void;
   onCancelInput?: () => void;
 }
 
@@ -109,11 +108,9 @@ export const ChatStepRenderer = ({
         <AwaitingInputForm 
           step={step} 
           onConfirm={(stateData) => {
-            if (!step.taskId) {
-              console.error("Cannot confirm input: step has no taskId");
-              return;
+            if (onConfirmInput) {
+              onConfirmInput(step, stateData);
             }
-            onConfirmInput(step.taskId, stateData);
           }} 
           onCancel={onCancelInput}
         />

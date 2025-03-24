@@ -22,7 +22,7 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
   const {
     message,
     setMessage,
-    attachedFile,
+    attachedFiles,
     handleFileAttachment,
     isProcessing,
     task,
@@ -60,7 +60,7 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
               onMessageChange={setMessage}
               onSendMessage={handleSendMessage}
               onExampleClick={setMessage}
-              attachedFile={attachedFile}
+              attachedFiles={attachedFiles}
               onFileAttach={handleFileAttachment}
               isNewTask={true}
             />
@@ -110,7 +110,7 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
         onMessageChange={setMessage}
         onSendMessage={handleSendMessage}
         onStopProcessing={handleStopProcessing}
-        attachedFile={attachedFile}
+        attachedFiles={attachedFiles}
         onFileAttach={handleFileAttachment}
         isNewTask={false}
       />

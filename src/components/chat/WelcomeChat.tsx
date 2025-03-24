@@ -8,10 +8,10 @@ interface WelcomeChatProps {
   message: string;
   isProcessing: boolean;
   onMessageChange: (message: string) => void;
-  onSendMessage: (file?: File) => void;
+  onSendMessage: (files?: File[]) => void;
   onExampleClick: (body: string) => void;
-  attachedFile?: File | null;
-  onFileAttach?: (file: File | null) => void;
+  attachedFiles?: File[] | null;
+  onFileAttach?: (files: File[] | null) => void;
   isNewTask?: boolean;
 }
 
@@ -21,7 +21,7 @@ export const WelcomeChat = ({
   onMessageChange,
   onSendMessage,
   onExampleClick,
-  attachedFile,
+  attachedFiles,
   onFileAttach,
   isNewTask = true
 }: WelcomeChatProps) => {
@@ -49,7 +49,7 @@ export const WelcomeChat = ({
             isProcessing={isProcessing}
             onMessageChange={onMessageChange}
             onSendMessage={onSendMessage}
-            attachedFile={attachedFile}
+            attachedFiles={attachedFiles}
             onFileAttach={onFileAttach}
             isNewTask={isNewTask}
           />

@@ -24,7 +24,7 @@ If you are running OpenGPA backend on an other server, update the VITE_API_URL t
 ### For development purposes
 
 ```
-npm init
+npm install
 npm run dev
 ```
 

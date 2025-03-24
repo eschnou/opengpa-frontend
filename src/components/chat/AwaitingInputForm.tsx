@@ -15,6 +15,7 @@ interface AwaitingInputFormProps {
 
 export const AwaitingInputForm = ({ step, onConfirm, onCancel }: AwaitingInputFormProps) => {
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Initialize form with stateData
   useEffect(() => {
@@ -37,7 +38,13 @@ export const AwaitingInputForm = ({ step, onConfirm, onCancel }: AwaitingInputFo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     onConfirm(formData);
+  };
+
+  const handleCancel = () => {
+    setIsSubmitting(true);
+    onCancel();
   };
 
   if (!step.result.stateData) {
@@ -63,6 +70,7 @@ export const AwaitingInputForm = ({ step, onConfirm, onCancel }: AwaitingInputFo
                 value={formData[key] || value}
                 onChange={(e) => handleFieldChange(key, e.target.value)}
                 className="w-full min-h-[120px]"
+                disabled={isSubmitting}
               />
             ) : (
               <Input
@@ -70,16 +78,25 @@ export const AwaitingInputForm = ({ step, onConfirm, onCancel }: AwaitingInputFo
                 value={formData[key] || value}
                 onChange={(e) => handleFieldChange(key, e.target.value)}
                 className="w-full"
+                disabled={isSubmitting}
               />
             )}
           </div>
         ))}
         
         <div className="flex justify-end space-x-2 pt-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={handleCancel}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button type="submit">
+          <Button 
+            type="submit"
+            disabled={isSubmitting}
+          >
             Confirm
           </Button>
         </div>

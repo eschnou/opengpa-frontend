@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from "react";
 import { ChatStepRenderer } from "./ChatStepRenderer";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -41,6 +40,14 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     }
   }, [steps, isProcessing]);
 
+  const onConfirmInput = (step: TaskStepDTO, stateData: Record<string, string>) => {
+    if (!step.taskId) {
+      console.error("Cannot confirm input: step has no taskId");
+      return;
+    }
+    handleConfirmInput(step.taskId, stateData);
+  };
+
   if (!taskId) {
     return (
       <div className="flex flex-col h-full w-full">
@@ -82,7 +89,7 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
                 step={step} 
                 onStepClick={() => onStepSelect(step)}
                 isSelected={selectedStep?.id === step.id}
-                onConfirmInput={handleConfirmInput}
+                onConfirmInput={onConfirmInput}
                 onCancelInput={handleCancelInput}
               />
             </div>

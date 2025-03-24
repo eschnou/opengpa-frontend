@@ -110,6 +110,17 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
   };
 
   const handleConfirmInput = async (taskId: string, stateData: Record<string, string>) => {
+    if (!taskId) {
+      console.error("Cannot confirm input: taskId is undefined");
+      toast({
+        title: "Error",
+        description: "Cannot process input without a valid task ID",
+        variant: "destructive",
+      });
+      setIsProcessing(false);
+      return;
+    }
+    
     console.log("Confirming input with state data:", stateData);
     setIsProcessing(true);
     setIsAwaitingInput(false);

@@ -108,7 +108,13 @@ export const ChatStepRenderer = ({
         
         <AwaitingInputForm 
           step={step} 
-          onConfirm={(stateData) => onConfirmInput(step.taskId, stateData)} 
+          onConfirm={(stateData) => {
+            if (!step.taskId) {
+              console.error("Cannot confirm input: step has no taskId");
+              return;
+            }
+            onConfirmInput(step.taskId, stateData);
+          }} 
           onCancel={onCancelInput}
         />
       </>

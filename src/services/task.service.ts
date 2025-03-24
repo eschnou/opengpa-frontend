@@ -14,6 +14,11 @@ export const createTask = async (message: string): Promise<TaskDTO> => {
 };
 
 export const progressTask = async (taskId: string, message?: string): Promise<TaskStepDTO> => {
+  if (!taskId) {
+    console.error("Cannot progress task: taskId is undefined");
+    throw new Error("Task ID is required to progress a task");
+  }
+  
   console.log("Progressing task:", taskId, "with message:", message);
   const response = await httpClient.post(`/api/tasks/${taskId}`, {
     message: message || "" // Send empty string if no message provided
@@ -23,6 +28,11 @@ export const progressTask = async (taskId: string, message?: string): Promise<Ta
 };
 
 export const progressTaskWithStateData = async (taskId: string, stateData: Record<string, string>): Promise<TaskStepDTO> => {
+  if (!taskId) {
+    console.error("Cannot progress task with stateData: taskId is undefined");
+    throw new Error("Task ID is required to progress a task with state data");
+  }
+  
   console.log("Progressing task with stateData:", taskId, stateData);
   const response = await httpClient.post(`/api/tasks/${taskId}`, {
     stateData: stateData

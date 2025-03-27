@@ -35,6 +35,8 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     handleSendMessage,
     handleConfirmInput,
     handleCancelInput,
+    enabledCategories,
+    handleCategoriesChange,
   } = useChat(taskId, onTaskCreated);
 
   useEffect(() => {
@@ -65,6 +67,8 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
               attachedFiles={attachedFiles}
               onFileAttach={handleFileAttachment}
               isNewTask={true}
+              selectedCategories={enabledCategories}
+              onCategoriesChange={handleCategoriesChange}
             />
           </div>
         </div>

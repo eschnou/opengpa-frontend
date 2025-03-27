@@ -1,18 +1,20 @@
 
+import React from "react";
+import { ChatInput } from "./ChatInput";
+import { useExamples } from "@/hooks/useExamples";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
-import chatExamples from "@/config/chat-examples.json";
-import { MessageInput } from "./MessageInput";
 
 interface WelcomeChatProps {
   message: string;
   isProcessing: boolean;
   onMessageChange: (message: string) => void;
   onSendMessage: (files?: File[]) => void;
-  onExampleClick: (body: string) => void;
+  onExampleClick: (example: string) => void;
   attachedFiles?: File[] | null;
   onFileAttach?: (files: File[] | null) => void;
   isNewTask?: boolean;
+  selectedCategories?: string[];
+  onCategoriesChange?: (categories: string[]) => void;
 }
 
 export const WelcomeChat = ({
@@ -23,38 +25,54 @@ export const WelcomeChat = ({
   onExampleClick,
   attachedFiles,
   onFileAttach,
-  isNewTask = true
+  isNewTask = true,
+  selectedCategories = [],
+  onCategoriesChange,
 }: WelcomeChatProps) => {
+  const { examples } = useExamples();
+
   return (
-    <main className="fixed left-64 top-16 right-0 bottom-0 bg-background overflow-hidden flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-6">
-        <h2 className="text-2xl font-semibold text-foreground">Welcome to Chat</h2>
-        <div className="max-w-md space-y-4 text-center">
-          <p className="text-muted-foreground">Here are some examples of what you can ask:</p>
-          <ul className="space-y-3 text-sm">
-            {chatExamples.examples.map((example, index) => (
-              <li 
-                key={index} 
-                className="p-3 bg-muted rounded-lg cursor-pointer hover:bg-accent transition-colors"
-                onClick={() => onExampleClick(example.body)}
+    <div className="flex flex-col h-full">
+      <div className="flex-1 flex flex-col justify-center items-center pb-10">
+        <div className="text-center space-y-6 max-w-3xl mx-auto px-4">
+          <h1 className="text-4xl font-bold tracking-tight">OpenGPA</h1>
+          <p className="text-xl text-muted-foreground">
+            Your AI-powered workplace productivity assistant
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-8">
+            {examples.map((example, i) => (
+              <Button
+                key={i}
+                variant="outline"
+                className="h-auto p-4 text-left flex flex-col items-start"
+                onClick={() => onExampleClick(example.prompt)}
+                disabled={isProcessing}
               >
-                "{example.title}"
-              </li>
+                <div className="font-semibold mb-2">{example.title}</div>
+                <div className="text-sm text-muted-foreground">
+                  {example.description}
+                </div>
+              </Button>
             ))}
-          </ul>
-        </div>
-        <div className="w-full max-w-md space-y-4">
-          <MessageInput
-            message={message}
-            isProcessing={isProcessing}
-            onMessageChange={onMessageChange}
-            onSendMessage={onSendMessage}
-            attachedFiles={attachedFiles}
-            onFileAttach={onFileAttach}
-            isNewTask={isNewTask}
-          />
+          </div>
         </div>
       </div>
-    </main>
+
+      <div className="w-full">
+        <ChatInput
+          message={message}
+          isProcessing={isProcessing}
+          onMessageChange={onMessageChange}
+          onSendMessage={onSendMessage}
+          onStopProcessing={() => {}}
+          attachedFiles={attachedFiles}
+          onFileAttach={onFileAttach}
+          isNewTask={isNewTask}
+          selectedCategories={selectedCategories}
+          onCategoriesChange={onCategoriesChange}
+        />
+      </div>
+    </div>
   );
 };

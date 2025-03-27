@@ -1,8 +1,9 @@
+
 import { useState, useRef, useEffect } from "react";
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Volume2 } from "lucide-react";
-import { httpClient } from "@/lib/http-client";
+import { Play, Pause, Volume2, Download } from "lucide-react";
+import { audioService } from "@/services/audio.service";
 import { useToast } from "@/components/ui/use-toast";
 import ReactMarkdown from "react-markdown";
 import { Progress } from "@/components/ui/progress";
@@ -39,11 +40,8 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
     
     setIsLoading(true);
     try {
-      const response = await httpClient.get(`/api/tasks/${taskId}/documents/${documentId}`, {
-        responseType: 'blob'
-      });
-      
-      const url = URL.createObjectURL(new Blob([response.data], { type: 'audio/mpeg' }));
+      const blob = await audioService.fetchDocumentAsBlob(taskId, documentId);
+      const url = URL.createObjectURL(blob);
       setAudioUrl(url);
       
       if (audioRef.current) {
@@ -69,6 +67,33 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
         audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!step.documents || step.documents.length === 0) return;
+    
+    try {
+      const document = step.documents[0];
+      const blob = await audioService.fetchDocumentAsBlob(document.taskId, document.filename);
+      
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = document.filename;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      toast({
+        title: "Error",
+        description: "Failed to download file. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -129,6 +154,16 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
                     Play
                   </>
                 )}
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDownload}
+                className="min-w-24"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download
               </Button>
               
               {audioUrl && (

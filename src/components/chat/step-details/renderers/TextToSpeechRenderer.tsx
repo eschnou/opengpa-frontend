@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Volume2, Download } from "lucide-react";
-import { audioService } from "@/services/audio.service";
+import { fileService } from "@/services/file.service";
 import { useToast } from "@/components/ui/use-toast";
 import ReactMarkdown from "react-markdown";
 import { Progress } from "@/components/ui/progress";
@@ -40,7 +40,7 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
     
     setIsLoading(true);
     try {
-      const blob = await audioService.fetchDocumentAsBlob(taskId, documentId);
+      const blob = await fileService.fetchDocumentAsBlob(taskId, documentId);
       const url = URL.createObjectURL(blob);
       setAudioUrl(url);
       
@@ -75,18 +75,18 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
     
     try {
       const documentFile = step.documents[0];
-      const blob = await audioService.fetchDocumentAsBlob(documentFile.taskId, documentFile.filename);
+      const blob = await fileService.fetchDocumentAsBlob(documentFile.taskId, documentFile.filename);
       
       // Create a hidden download link using the DOM API, not the DocumentDTO
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = window.document.createElement('a');
       link.href = url;
       link.download = documentFile.filename;
-      document.body.appendChild(link);
+      window.document.body.appendChild(link);
       link.click();
       
       // Clean up
-      document.body.removeChild(link);
+      window.document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading file:", error);

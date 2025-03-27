@@ -1,7 +1,7 @@
 
 import { httpClient } from "@/lib/http-client";
 
-export const audioService = {
+export const fileService = {
   /**
    * Fetches a document as a blob from the API
    * @param taskId The task ID

@@ -4,7 +4,7 @@ import { DocumentDTO } from "@/types/api";
 import { FileText, Image, FileSpreadsheet, FileAudio, Play, Pause, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { audioService } from "@/services/audio.service";
+import { fileService } from "@/services/file.service";
 
 interface DocumentAttachmentProps {
   document: DocumentDTO;
@@ -35,7 +35,7 @@ export const DocumentAttachment = ({ document }: DocumentAttachmentProps) => {
     if (!audio) {
       try {
         // Fetch the audio file if not loaded yet
-        const audioBlob = await audioService.fetchDocumentAsBlob(document.taskId, document.filename);
+        const audioBlob = await fileService.fetchDocumentAsBlob(document.taskId, document.filename);
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
         
@@ -60,7 +60,7 @@ export const DocumentAttachment = ({ document }: DocumentAttachmentProps) => {
 
   const handleDownload = async () => {
     try {
-      const blob = await audioService.fetchDocumentAsBlob(document.taskId, document.filename);
+      const blob = await fileService.fetchDocumentAsBlob(document.taskId, document.filename);
       
       // Create a hidden download link using the global document object, not the DocumentDTO
       const url = URL.createObjectURL(blob);

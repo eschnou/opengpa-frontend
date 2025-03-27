@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,6 @@ import ReactMarkdown from "react-markdown";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
-// Define the TypeScript interface for the script item
 interface ScriptItem {
   voice: string;
   text: string;
@@ -24,11 +22,10 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
-  // Extract script from action parameters if available
-  const script = step.action?.parameters?.script as ScriptItem[] | undefined;
+  const scriptParam = step.action?.parameters?.script;
+  const script = Array.isArray(scriptParam) ? scriptParam as ScriptItem[] : undefined;
   const inputText = step.action?.parameters?.input || '';
   
-  // Clean up audio URL on unmount
   useEffect(() => {
     return () => {
       if (audioUrl) {
@@ -75,21 +72,18 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
     }
   };
 
-  // Update time display and progress
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
     }
   };
 
-  // Set duration when metadata is loaded
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
     }
   };
 
-  // Format time in mm:ss
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);

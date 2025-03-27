@@ -88,3 +88,10 @@ export interface RagChunkDTO {
   documentDescription: string;
   content: string;
 }
+
+// Add the CategoryInfoDTO interface
+export interface CategoryInfoDTO {
+  name: string;
+  displayName?: string;
+  description?: string;
+}

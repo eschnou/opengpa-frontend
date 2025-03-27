@@ -4,7 +4,6 @@ import { DocumentDTO } from "@/types/api";
 import { FileText, Image, FileSpreadsheet, FileAudio, Play, Pause, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { httpClient } from "@/lib/http-client";
 import { audioService } from "@/services/audio.service";
 
 interface DocumentAttachmentProps {
@@ -63,7 +62,7 @@ export const DocumentAttachment = ({ document }: DocumentAttachmentProps) => {
     try {
       const blob = await audioService.fetchDocumentAsBlob(document.taskId, document.filename);
       
-      // Create a hidden download link
+      // Create a hidden download link using the DOM API, not the DocumentDTO
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;

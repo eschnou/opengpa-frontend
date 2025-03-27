@@ -74,13 +74,14 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
     if (!step.documents || step.documents.length === 0) return;
     
     try {
-      const document = step.documents[0];
-      const blob = await audioService.fetchDocumentAsBlob(document.taskId, document.filename);
+      const documentFile = step.documents[0];
+      const blob = await audioService.fetchDocumentAsBlob(documentFile.taskId, documentFile.filename);
       
+      // Create a hidden download link using the DOM API, not the DocumentDTO
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = document.filename;
+      link.download = documentFile.filename;
       document.body.appendChild(link);
       link.click();
       

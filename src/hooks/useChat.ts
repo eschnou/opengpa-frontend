@@ -31,6 +31,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     isAwaitingInput,
     stopProcessingRef,
     setIsProcessing,
+    setIsStopping,
     setIsAwaitingInput,
     handleStopProcessing,
     processTaskLoop,

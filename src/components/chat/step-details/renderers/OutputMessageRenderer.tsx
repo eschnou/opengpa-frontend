@@ -1,3 +1,4 @@
+
 import { TaskStepDTO } from "@/types/api";
 import ReactMarkdown from 'react-markdown';
 
@@ -20,7 +21,12 @@ export const OutputMessageRenderer = ({ step }: { step: TaskStepDTO }) => {
             <ReactMarkdown
               components={{
                 a: ({ node, ...props }) => (
-                  <a {...props} target="_blank" rel="noopener noreferrer" />
+                  <a 
+                    {...props} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary underline hover:text-primary/80 transition-colors" 
+                  />
                 ),
               }}
             >

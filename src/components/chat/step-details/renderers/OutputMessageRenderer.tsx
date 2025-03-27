@@ -28,8 +28,11 @@ export const OutputMessageRenderer = ({ step }: { step: TaskStepDTO }) => {
                     className="text-primary underline hover:text-primary/80 transition-colors" 
                   />
                 ),
-                code: ({node, inline, className, children, ...props}) => {
-                  if (inline) {
+                code: ({ className, children, ...props }: { className?: string, children: React.ReactNode } & React.HTMLAttributes<HTMLElement>) => {
+                  const match = /language-(\w+)/.exec(className || '');
+                  const isInline = !match && (props as any).inline;
+                  
+                  if (isInline) {
                     return (
                       <code className="bg-muted-foreground/10 px-1 py-0.5 rounded text-sm" {...props}>
                         {children}
@@ -44,7 +47,7 @@ export const OutputMessageRenderer = ({ step }: { step: TaskStepDTO }) => {
                     </pre>
                   );
                 },
-                strong: ({node, children, ...props}) => (
+                strong: ({ children, ...props }) => (
                   <strong className="font-bold" {...props}>{children}</strong>
                 ),
               }}

@@ -149,8 +149,11 @@ export const ChatStepRenderer = ({
                     className="text-primary-foreground underline hover:opacity-80 transition-colors" 
                   />
                 ),
-                code: ({node, inline, className, children, ...props}) => {
-                  if (inline) {
+                code: ({ className, children, ...props }: { className?: string, children: React.ReactNode } & React.HTMLAttributes<HTMLElement>) => {
+                  const match = /language-(\w+)/.exec(className || '');
+                  const isInline = !match && (props as any).inline;
+                  
+                  if (isInline) {
                     return (
                       <code className="bg-primary-foreground/20 text-primary-foreground px-1 py-0.5 rounded text-sm" {...props}>
                         {children}
@@ -165,7 +168,7 @@ export const ChatStepRenderer = ({
                     </pre>
                   );
                 },
-                strong: ({node, children, ...props}) => (
+                strong: ({ children, ...props }) => (
                   <strong className="font-bold" {...props}>{children}</strong>
                 ),
               }}

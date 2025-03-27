@@ -1,3 +1,4 @@
+
 import { TaskStepDTO } from "@/types/api";
 import { Button } from "@/components/ui/button";
 import { Download, Play, Pause, AlertOctagon } from "lucide-react";
@@ -137,15 +138,41 @@ export const ChatStepRenderer = ({
           )}
           onClick={onStepClick}
         >
-          <ReactMarkdown
-            components={{
-              a: ({ node, ...props }) => (
-                <a {...props} target="_blank" rel="noopener noreferrer" />
-              ),
-            }}
-          >
-            {step.action.parameters?.message || step.result?.details || ''}
-          </ReactMarkdown>
+          <div className="prose prose-sm max-w-none dark:prose-invert">
+            <ReactMarkdown
+              components={{
+                a: ({ node, ...props }) => (
+                  <a 
+                    {...props} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary-foreground underline hover:opacity-80 transition-colors" 
+                  />
+                ),
+                code: ({node, inline, className, children, ...props}) => {
+                  if (inline) {
+                    return (
+                      <code className="bg-primary-foreground/20 text-primary-foreground px-1 py-0.5 rounded text-sm" {...props}>
+                        {children}
+                      </code>
+                    );
+                  }
+                  return (
+                    <pre className="bg-primary-foreground/10 p-2 rounded-md overflow-x-auto">
+                      <code className="text-primary-foreground text-sm" {...props}>
+                        {children}
+                      </code>
+                    </pre>
+                  );
+                },
+                strong: ({node, children, ...props}) => (
+                  <strong className="font-bold" {...props}>{children}</strong>
+                ),
+              }}
+            >
+              {step.action.parameters?.message || step.result?.details || ''}
+            </ReactMarkdown>
+          </div>
           {step.result?.error && (
             <div className="flex items-center gap-2 mt-2 text-destructive">
               <AlertOctagon className="h-4 w-4" />

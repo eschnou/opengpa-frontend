@@ -132,8 +132,8 @@ export const ChatStepRenderer = ({
             "max-w-[80%] ml-auto p-4 rounded-lg",
             step.result?.error 
               ? "bg-destructive/10 text-foreground hover:bg-destructive/20" 
-              : "bg-primary text-primary-foreground hover:bg-primary/90",
-            isSelected && "bg-primary/90",
+              : "bg-primary/10 text-foreground hover:bg-primary/20",
+            isSelected && "bg-primary/20",
             "cursor-pointer transition-colors"
           )}
           onClick={onStepClick}
@@ -146,7 +146,7 @@ export const ChatStepRenderer = ({
                     {...props} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-primary-foreground underline hover:opacity-80 transition-colors" 
+                    className="text-primary underline hover:text-primary/80 transition-colors" 
                   />
                 ),
                 code: ({ className, children, ...props }: { className?: string, children: React.ReactNode } & React.HTMLAttributes<HTMLElement>) => {
@@ -155,21 +155,21 @@ export const ChatStepRenderer = ({
                   
                   if (isInline) {
                     return (
-                      <code className="bg-primary-foreground/20 text-primary-foreground px-1 py-0.5 rounded text-sm" {...props}>
+                      <code className="bg-muted/70 text-foreground px-1 py-0.5 rounded text-sm" {...props}>
                         {children}
                       </code>
                     );
                   }
                   return (
-                    <pre className="bg-primary-foreground/10 p-2 rounded-md overflow-x-auto">
-                      <code className="text-primary-foreground text-sm" {...props}>
+                    <pre className="bg-muted p-2 rounded-md overflow-x-auto">
+                      <code className="text-foreground text-sm" {...props}>
                         {children}
                       </code>
                     </pre>
                   );
                 },
                 strong: ({ children, ...props }) => (
-                  <strong className="font-bold" {...props}>{children}</strong>
+                  <strong className="font-bold text-foreground" {...props}>{children}</strong>
                 ),
               }}
             >
@@ -190,7 +190,7 @@ export const ChatStepRenderer = ({
               "max-w-[80%] ml-auto p-4 rounded-lg",
               step.result?.error 
                 ? "bg-destructive/10 text-foreground hover:bg-destructive/20" 
-                : "bg-muted text-muted-foreground hover:bg-muted/80",
+                : "bg-muted text-foreground hover:bg-muted/80",
               isSelected && "bg-muted/80",
               "cursor-pointer transition-colors"
             )}

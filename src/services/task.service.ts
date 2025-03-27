@@ -2,11 +2,12 @@
 import { httpClient } from "@/lib/http-client";
 import { TaskDTO, TaskStepDTO } from "@/types/api";
 
-export const createTask = async (message: string): Promise<TaskDTO> => {
-  console.log("Creating task with message:", message);
+export const createTask = async (message: string, enabledCategories?: string[]): Promise<TaskDTO> => {
+  console.log("Creating task with message:", message, "and enabled categories:", enabledCategories);
   
   const response = await httpClient.post("/api/tasks", {
-    message: message
+    message: message,
+    enabledCategories: enabledCategories
   });
   
   console.log("Task created response:", response.data);

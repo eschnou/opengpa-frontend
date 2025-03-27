@@ -1,4 +1,3 @@
-
 import { useState, useRef, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -29,6 +28,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
   const [isStopping, setIsStopping] = useState(false);
   const [isAwaitingInput, setIsAwaitingInput] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [enabledCategories, setEnabledCategories] = useState<string[]>([]);
   const stopProcessingRef = useRef(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -84,6 +84,11 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         description: `${files.length} file(s) will be uploaded when you send your message.`,
       });
     }
+  };
+
+  const handleCategoriesChange = (categories: string[]) => {
+    console.log("Categories changed:", categories);
+    setEnabledCategories(categories);
   };
 
   const processTaskLoop = async (taskId: string, initialMessage?: string) => {
@@ -222,13 +227,16 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     setMessage("");
     
     try {
-      console.log("Starting to process message...", { fileCount: filesToUpload.length });
+      console.log("Starting to process message...", { 
+        fileCount: filesToUpload.length,
+        enabledCategories: enabledCategories
+      });
       
       let currentTaskId = taskId;
       
       if (!currentTaskId) {
         console.log("Creating new task...");
-        const newTask = await createTask(currentMessage);
+        const newTask = await createTask(currentMessage, enabledCategories.length > 0 ? enabledCategories : undefined);
         console.log("Task created successfully:", newTask);
         currentTaskId = newTask.id;
         
@@ -237,15 +245,15 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         if (onTaskCreated) {
           onTaskCreated(newTask.id);
         }
+        
+        setEnabledCategories([]);
       }
 
-      // Upload all files first before sending the message
       if (filesToUpload.length > 0) {
         console.log(`Uploading ${filesToUpload.length} file(s) sequentially...`);
         setUploadProgress(0);
         
         try {
-          // Use the progress callback to update UI
           const uploadedDocs = await workspaceService.uploadMultipleDocuments(
             currentTaskId, 
             filesToUpload,
@@ -275,7 +283,6 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
         }
       }
 
-      // Files are now guaranteed to be uploaded before proceeding
       setIsUploading(false);
       await processTaskLoop(currentTaskId, currentMessage);
     } catch (error) {
@@ -313,5 +320,7 @@ export const useChat = (taskId?: string, onTaskCreated?: (taskId: string) => voi
     handleSendMessage,
     handleConfirmInput,
     handleCancelInput,
+    enabledCategories,
+    handleCategoriesChange,
   };
 };

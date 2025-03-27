@@ -2,7 +2,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send, Square, Paperclip, Camera, X, Loader2 } from "lucide-react";
-import { KeyboardEvent, useRef, useEffect } from "react";
+import { KeyboardEvent, useRef, useEffect, ReactNode } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -23,6 +23,7 @@ interface MessageInputProps {
   attachedFiles?: File[] | null;
   onFileAttach?: (files: File[] | null) => void;
   isNewTask?: boolean;
+  toolSelector?: ReactNode;
 }
 
 export const MessageInput = ({
@@ -36,7 +37,8 @@ export const MessageInput = ({
   className,
   attachedFiles = [],
   onFileAttach,
-  isNewTask = false
+  isNewTask = false,
+  toolSelector
 }: MessageInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -252,6 +254,7 @@ export const MessageInput = ({
               </TooltipTrigger>
               <TooltipContent>Take screenshot</TooltipContent>
             </Tooltip>
+            {toolSelector}
           </div>
           <div className="flex-1 relative">
             <Textarea

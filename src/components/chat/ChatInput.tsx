@@ -1,5 +1,6 @@
 
 import { MessageInput } from "./MessageInput";
+import { ToolCategorySelector } from "./ToolCategorySelector";
 
 interface ChatInputProps {
   message: string;
@@ -12,12 +13,25 @@ interface ChatInputProps {
   attachedFiles?: File[] | null;
   onFileAttach?: (files: File[] | null) => void;
   isNewTask?: boolean;
+  selectedCategories?: string[];
+  onCategoriesChange?: (categories: string[]) => void;
 }
 
 export const ChatInput = (props: ChatInputProps) => {
   return (
     <div className="p-4">
-      <MessageInput {...props} />
+      <MessageInput 
+        {...props} 
+        toolSelector={
+          props.isNewTask && props.onCategoriesChange ? (
+            <ToolCategorySelector
+              selectedCategories={props.selectedCategories || []}
+              onChange={props.onCategoriesChange}
+              disabled={props.isProcessing}
+            />
+          ) : null
+        }
+      />
     </div>
   );
 };

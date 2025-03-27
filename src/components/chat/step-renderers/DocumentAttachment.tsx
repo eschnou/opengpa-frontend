@@ -62,16 +62,16 @@ export const DocumentAttachment = ({ document }: DocumentAttachmentProps) => {
     try {
       const blob = await audioService.fetchDocumentAsBlob(document.taskId, document.filename);
       
-      // Create a hidden download link using the DOM API, not the DocumentDTO
+      // Create a hidden download link using the global document object, not the DocumentDTO
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = document.filename;
-      document.body.appendChild(link);
-      link.click();
+      const downloadLink = window.document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = document.filename;
+      window.document.body.appendChild(downloadLink);
+      downloadLink.click();
       
       // Clean up
-      document.body.removeChild(link);
+      window.document.body.removeChild(downloadLink);
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading file:", error);

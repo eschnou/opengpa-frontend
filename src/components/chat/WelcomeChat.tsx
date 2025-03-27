@@ -46,14 +46,11 @@ export const WelcomeChat = ({
               <Button
                 key={i}
                 variant="outline"
-                className="h-auto p-4 text-left flex flex-col items-start overflow-hidden"
+                className="h-auto p-4 text-left flex items-center justify-center"
                 onClick={() => onExampleClick(example.prompt)}
                 disabled={isProcessing}
               >
-                <div className="font-semibold mb-2 w-full">{example.title}</div>
-                <div className="text-sm text-muted-foreground w-full truncate">
-                  {example.description}
-                </div>
+                <div className="font-semibold">{example.title}</div>
               </Button>
             ))}
           </div>

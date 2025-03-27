@@ -10,7 +10,7 @@ export interface ChatExample {
 export function useExamples() {
   const examples: ChatExample[] = chatExamples.examples.map(example => ({
     title: example.title,
-    description: example.body.substring(0, 100) + (example.body.length > 100 ? '...' : ''),
+    description: example.body.substring(0, 80) + (example.body.length > 80 ? '...' : ''),
     prompt: example.body
   }));
 

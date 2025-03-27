@@ -3,6 +3,7 @@ import React from "react";
 import { ChatInput } from "./ChatInput";
 import { useExamples } from "@/hooks/useExamples";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface WelcomeChatProps {
   message: string;
@@ -45,12 +46,12 @@ export const WelcomeChat = ({
               <Button
                 key={i}
                 variant="outline"
-                className="h-auto p-4 text-left flex flex-col items-start"
+                className="h-auto p-4 text-left flex flex-col items-start overflow-hidden"
                 onClick={() => onExampleClick(example.prompt)}
                 disabled={isProcessing}
               >
-                <div className="font-semibold mb-2">{example.title}</div>
-                <div className="text-sm text-muted-foreground">
+                <div className="font-semibold mb-2 w-full">{example.title}</div>
+                <div className="text-sm text-muted-foreground w-full truncate">
                   {example.description}
                 </div>
               </Button>

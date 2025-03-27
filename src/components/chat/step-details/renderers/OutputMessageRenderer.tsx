@@ -1,6 +1,6 @@
 
 import { TaskStepDTO } from "@/types/api";
-import ReactMarkdown from 'react-markdown';
+import { MarkdownContent } from "../../step-renderers/MarkdownContent";
 
 export const OutputMessageRenderer = ({ step }: { step: TaskStepDTO }) => {
   return (
@@ -18,42 +18,7 @@ export const OutputMessageRenderer = ({ step }: { step: TaskStepDTO }) => {
         <div className="mt-4">
           <h4 className="text-sm font-medium mb-2 text-muted-foreground">Details</h4>
           <div className="bg-muted rounded-lg p-4 prose prose-sm max-w-none dark:prose-invert">
-            <ReactMarkdown
-              components={{
-                a: ({ node, ...props }) => (
-                  <a 
-                    {...props} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary underline hover:text-primary/80 transition-colors" 
-                  />
-                ),
-                code: ({ className, children, ...props }: { className?: string, children: React.ReactNode } & React.HTMLAttributes<HTMLElement>) => {
-                  const match = /language-(\w+)/.exec(className || '');
-                  const isInline = !match && (props as any).inline;
-                  
-                  if (isInline) {
-                    return (
-                      <code className="bg-muted-foreground/10 px-1 py-0.5 rounded text-sm" {...props}>
-                        {children}
-                      </code>
-                    );
-                  }
-                  return (
-                    <pre className="bg-muted-foreground/10 p-2 rounded-md overflow-x-auto">
-                      <code className="text-sm" {...props}>
-                        {children}
-                      </code>
-                    </pre>
-                  );
-                },
-                strong: ({ children, ...props }) => (
-                  <strong className="font-bold" {...props}>{children}</strong>
-                ),
-              }}
-            >
-              {step.result.details}
-            </ReactMarkdown>
+            <MarkdownContent content={step.result.details} />
           </div>
         </div>
       )}

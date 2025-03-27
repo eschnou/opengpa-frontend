@@ -7,6 +7,13 @@ import { httpClient } from "@/lib/http-client";
 import { useToast } from "@/components/ui/use-toast";
 import ReactMarkdown from "react-markdown";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+
+// Define the TypeScript interface for the script item
+interface ScriptItem {
+  voice: string;
+  text: string;
+}
 
 export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
   const { toast } = useToast();
@@ -17,6 +24,10 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
+  // Extract script from action parameters if available
+  const script = step.action?.parameters?.script as ScriptItem[] | undefined;
+  const inputText = step.action?.parameters?.input || '';
+  
   // Clean up audio URL on unmount
   useEffect(() => {
     return () => {
@@ -151,12 +162,37 @@ export const TextToSpeechRenderer = ({ step }: { step: TaskStepDTO }) => {
         </div>
       )}
 
-      <div className="rounded-lg bg-muted p-4">
-        <h3 className="text-sm font-medium mb-2">Input Text:</h3>
-        <ReactMarkdown>
-          {step.action?.parameters?.input || ''}
-        </ReactMarkdown>
-      </div>
+      {script && script.length > 0 ? (
+        <div className="rounded-lg bg-muted p-4">
+          <h3 className="text-sm font-medium mb-2">Conversation Script:</h3>
+          <div className="space-y-3">
+            {script.map((item, index) => (
+              <div 
+                key={index} 
+                className={cn(
+                  "p-3 rounded-lg",
+                  "border border-border",
+                  index % 2 === 0 ? "bg-primary/5" : "bg-secondary/5"
+                )}
+              >
+                <div className="flex items-center space-x-2 mb-1">
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                    {item.voice}
+                  </span>
+                </div>
+                <div className="text-sm">{item.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : inputText ? (
+        <div className="rounded-lg bg-muted p-4">
+          <h3 className="text-sm font-medium mb-2">Input Text:</h3>
+          <ReactMarkdown>
+            {inputText}
+          </ReactMarkdown>
+        </div>
+      ) : null}
     </div>
   );
 };

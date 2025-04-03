@@ -12,6 +12,8 @@ import Settings from "./pages/Settings";
 import Knowledge from "./pages/Knowledge";
 import DocumentDetails from "./pages/DocumentDetails";
 import { isAuthenticated } from "@/utils/token";
+import { useEffect } from "react";
+import { applyThemeColors } from "@/utils/theme";
 
 const queryClient = new QueryClient();
 
@@ -23,54 +25,61 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/dashboard" element={<Navigate to="/" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/knowledge"
-              element={
-                <ProtectedRoute>
-                  <Knowledge />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/knowledge/:id"
-              element={
-                <ProtectedRoute>
-                  <DocumentDetails />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  // Apply theme colors when the app initializes
+  useEffect(() => {
+    applyThemeColors();
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/dashboard" element={<Navigate to="/" replace />} />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/knowledge"
+                element={
+                  <ProtectedRoute>
+                    <Knowledge />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/knowledge/:id"
+                element={
+                  <ProtectedRoute>
+                    <DocumentDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

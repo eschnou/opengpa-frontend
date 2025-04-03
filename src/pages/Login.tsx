@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -138,8 +139,8 @@ const Login = () => {
         <div className="text-center">
           <div className="flex justify-center">
             <img
-              src="/opengpa_logo_flat_transparent.png"
-              alt="OpenGPA Logo"
+              src={APP_CONFIG.branding.loginLogo}
+              alt={`${APP_CONFIG.branding.appName} Logo`}
               className="h-12 w-12"
             />
           </div>

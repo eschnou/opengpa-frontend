@@ -1,8 +1,12 @@
+
 import React from "react";
 import { ChatInput } from "./ChatInput";
 import { useExamples } from "@/hooks/useExamples";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { APP_CONFIG } from "@/config/app.config";
+import { Loader2 } from "lucide-react";
+
 interface WelcomeChatProps {
   message: string;
   isProcessing: boolean;
@@ -15,6 +19,7 @@ interface WelcomeChatProps {
   selectedCategories?: string[];
   onCategoriesChange?: (categories: string[]) => void;
 }
+
 export const WelcomeChat = ({
   message,
   isProcessing,
@@ -28,24 +33,56 @@ export const WelcomeChat = ({
   onCategoriesChange
 }: WelcomeChatProps) => {
   const {
-    examples
+    examples,
+    isLoading,
+    error
   } = useExamples();
-  return <div className="flex flex-col h-full">
+
+  return (
+    <div className="flex flex-col h-full">
       <div className="flex-1 flex flex-col justify-center items-center pb-10">
         <div className="text-center space-y-6 max-w-3xl mx-auto px-4">
-          <h1 className="text-4xl font-bold tracking-tight">OpenGPA</h1>
+          <h1 className="text-4xl font-bold tracking-tight">{APP_CONFIG.branding.appName}</h1>
           <p className="text-xl text-muted-foreground">Here are some examples of what you can ask:</p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-8">
-            {examples.map((example, i) => <Button key={i} variant="outline" className="h-auto p-4 text-left flex items-center justify-center" onClick={() => onExampleClick(example.prompt)} disabled={isProcessing}>
-                <div className="font-semibold">{example.title}</div>
-              </Button>)}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : error ? (
+            <div className="text-destructive text-sm">{error}</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-8">
+              {examples.map((example, i) => (
+                <Button
+                  key={i}
+                  variant="outline"
+                  className="h-auto p-4 text-left flex items-center justify-center"
+                  onClick={() => onExampleClick(example.prompt)}
+                  disabled={isProcessing}
+                >
+                  <div className="font-semibold">{example.title}</div>
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <div className="w-full">
-        <ChatInput message={message} isProcessing={isProcessing} onMessageChange={onMessageChange} onSendMessage={onSendMessage} onStopProcessing={() => {}} attachedFiles={attachedFiles} onFileAttach={onFileAttach} isNewTask={isNewTask} selectedCategories={selectedCategories} onCategoriesChange={onCategoriesChange} />
+        <ChatInput
+          message={message}
+          isProcessing={isProcessing}
+          onMessageChange={onMessageChange}
+          onSendMessage={onSendMessage}
+          onStopProcessing={() => {}}
+          attachedFiles={attachedFiles}
+          onFileAttach={onFileAttach}
+          isNewTask={isNewTask}
+          selectedCategories={selectedCategories}
+          onCategoriesChange={onCategoriesChange}
+        />
       </div>
-    </div>;
+    </div>
+  );
 };

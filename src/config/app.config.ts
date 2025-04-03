@@ -11,7 +11,9 @@ export const APP_CONFIG = {
     accentColor: import.meta.env.VITE_ACCENT_COLOR || "142.1 76.2% 36.3%",
     // App name
     appName: import.meta.env.VITE_APP_NAME || "OpenGPA",
-  }
+  },
+  // URL for fetching chat examples
+  examplesUrl: import.meta.env.VITE_EXAMPLES_URL || "",
 } as const;
 
 // Type for the config to ensure type safety

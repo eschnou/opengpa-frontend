@@ -10,6 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MessageInputProps {
   message: string;
@@ -42,6 +43,7 @@ export const MessageInput = ({
 }: MessageInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isMobile = useIsMobile();
 
   // Auto-resize textarea as content changes
   useEffect(() => {
@@ -177,6 +179,87 @@ export const MessageInput = ({
     }
   };
 
+  // Render the utility buttons (paperclip, camera, tool selector)
+  const renderUtilityButtons = () => (
+    <div className="flex gap-1.5">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isProcessing || isUploading}
+            className="hover:bg-muted h-[44px] w-[44px]"
+          >
+            <Paperclip className="h-5 w-5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Attach files (.txt, .csv, .jpg, .png or .pdf)</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={handleScreenshot}
+            disabled={isProcessing || isUploading}
+            className="hover:bg-muted h-[44px] w-[44px]"
+          >
+            <Camera className="h-5 w-5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Take screenshot</TooltipContent>
+      </Tooltip>
+      {toolSelector}
+    </div>
+  );
+
+  // Render the send/stop button
+  const renderActionButton = () => (
+    <div className="absolute right-2 bottom-1.5">
+      {isProcessing ? (
+        isUploading ? (
+          <Button 
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 cursor-not-allowed"
+            disabled
+          >
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </Button>
+        ) : onStopProcessing ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="destructive"
+                size="icon"
+                className="h-8 w-8"
+                onClick={onStopProcessing}
+              >
+                <Square className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Stop processing</TooltipContent>
+          </Tooltip>
+        ) : null
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onSendMessage(attachedFiles || [])}
+              disabled={isProcessing || (!message.trim() && (!attachedFiles || attachedFiles.length === 0))}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Send message</TooltipContent>
+        </Tooltip>
+      )}
+    </div>
+  );
+
   return (
     <div className={className}>
       <div className={`flex flex-col gap-2 ${!isNewTask ? "border-t border-l border-r border-border rounded-t-lg bg-card/50" : ""}`}>
@@ -224,101 +307,60 @@ export const MessageInput = ({
           </div>
         )}
         
-        <div className="flex gap-2 items-start p-3">
-          <div className="flex gap-1.5">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isProcessing || isUploading}
-                  className="hover:bg-muted h-[44px] w-[44px]"
-                >
-                  <Paperclip className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Attach files (.txt, .csv, .jpg, .png or .pdf)</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={handleScreenshot}
-                  disabled={isProcessing || isUploading}
-                  className="hover:bg-muted h-[44px] w-[44px]"
-                >
-                  <Camera className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Take screenshot</TooltipContent>
-            </Tooltip>
-            {toolSelector}
-          </div>
-          <div className="flex-1 relative">
-            <Textarea
-              ref={textareaRef}
-              value={message}
-              onChange={(e) => onMessageChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your message..."
-              className="resize-none pr-12 min-h-[44px] max-h-[400px] overflow-y-auto"
-              rows={1}
-              disabled={isProcessing}
-            />
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-              accept=".txt,.csv,.jpg,.jpeg,.png,.pdf"
-              multiple
-            />
-            <div className="absolute right-2 bottom-1.5">
-              {isProcessing ? (
-                isUploading ? (
-                  <Button 
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 cursor-not-allowed"
-                    disabled
-                  >
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  </Button>
-                ) : onStopProcessing ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="destructive"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={onStopProcessing}
-                      >
-                        <Square className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Stop processing</TooltipContent>
-                  </Tooltip>
-                ) : null
-              ) : (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => onSendMessage(attachedFiles || [])}
-                      disabled={isProcessing || (!message.trim() && (!attachedFiles || attachedFiles.length === 0))}
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Send message</TooltipContent>
-                </Tooltip>
-              )}
+        {/* Different layout based on mobile or desktop */}
+        {isMobile ? (
+          <div className="flex flex-col gap-2 p-3">
+            <div className="flex justify-between">
+              {renderUtilityButtons()}
+            </div>
+            <div className="relative">
+              <Textarea
+                ref={textareaRef}
+                value={message}
+                onChange={(e) => onMessageChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your message..."
+                className="resize-none pr-12 min-h-[44px] max-h-[400px] overflow-y-auto"
+                rows={1}
+                disabled={isProcessing}
+              />
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept=".txt,.csv,.jpg,.jpeg,.png,.pdf"
+                multiple
+              />
+              {renderActionButton()}
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex gap-2 items-start p-3">
+            {renderUtilityButtons()}
+            <div className="flex-1 relative">
+              <Textarea
+                ref={textareaRef}
+                value={message}
+                onChange={(e) => onMessageChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your message..."
+                className="resize-none pr-12 min-h-[44px] max-h-[400px] overflow-y-auto"
+                rows={1}
+                disabled={isProcessing}
+              />
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept=".txt,.csv,.jpg,.jpeg,.png,.pdf"
+                multiple
+              />
+              {renderActionButton()}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

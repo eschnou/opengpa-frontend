@@ -8,6 +8,7 @@ import { useChat } from "@/hooks/useChat";
 import { TaskStepDTO } from "@/types/api";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { StepDetails } from "./StepDetails";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ChatAreaProps {
   taskId?: string;
@@ -18,6 +19,7 @@ interface ChatAreaProps {
 
 export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: ChatAreaProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   
   const {
     message,
@@ -125,6 +127,22 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     </div>
   );
 
+  // For mobile view, we use a drawer instead of resizable panels
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full w-full">
+        <div className="flex-1 overflow-y-auto p-4 w-full flex justify-center">
+          {chatContent}
+        </div>
+        {selectedStep && (
+          <StepDetails step={selectedStep} onClose={() => onStepSelect(null)} isMobile={true} />
+        )}
+        {chatInputComponent}
+      </div>
+    );
+  }
+
+  // Desktop view with resizable panels
   if (!selectedStep) {
     return (
       <div className="flex flex-col h-full w-full">
@@ -146,7 +164,7 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
         </ResizablePanel>
         <ResizableHandle withHandle className="w-px bg-border" />
         <ResizablePanel defaultSize={30}>
-          <StepDetails step={selectedStep} onClose={() => onStepSelect(null)} />
+          <StepDetails step={selectedStep} onClose={() => onStepSelect(null)} isMobile={false} />
         </ResizablePanel>
       </ResizablePanelGroup>
       {chatInputComponent}

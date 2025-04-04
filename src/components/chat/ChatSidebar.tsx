@@ -1,11 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { ChevronLeft, MessageSquare, PlusCircle, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { httpClient } from "@/lib/http-client";
-import { TaskDTO } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -157,7 +154,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-[280px]">
+        <SheetContent side="left" className="p-0 w-[280px]" hideCloseButton>
           <div className="flex flex-col h-full">
             {mobileSidebarHeader}
             {taskList}

@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatStepRenderer } from "./ChatStepRenderer";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { WelcomeChat } from "./WelcomeChat";
@@ -20,6 +20,12 @@ interface ChatAreaProps {
 export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: ChatAreaProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const [displayStep, setDisplayStep] = useState<TaskStepDTO | null>(null);
+  
+  // Update displayStep when selectedStep changes
+  useEffect(() => {
+    setDisplayStep(selectedStep);
+  }, [selectedStep]);
   
   const {
     message,
@@ -134,8 +140,12 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
         <div className="flex-1 overflow-y-auto p-4 w-full flex justify-center">
           {chatContent}
         </div>
-        {selectedStep && (
-          <StepDetails step={selectedStep} onClose={() => onStepSelect(null)} isMobile={true} />
+        {displayStep && (
+          <StepDetails 
+            step={displayStep} 
+            onClose={() => onStepSelect(null)} 
+            isMobile={true}
+          />
         )}
         {chatInputComponent}
       </div>

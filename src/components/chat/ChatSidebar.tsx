@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ChevronLeft, MessageSquare, PlusCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,7 +32,6 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
     queryFn: fetchTasks,
   });
 
-  // Close sheet when task is selected on mobile
   useEffect(() => {
     if (isMobile && selectedTaskId) {
       setSheetOpen(false);
@@ -123,7 +121,6 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
     </>
   );
 
-  // Mobile sidebar uses Sheet component
   if (isMobile) {
     return (
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -138,8 +135,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-0 w-[280px]">
-          <div className="flex flex-col h-full">
-            {/* Modified header for mobile to separate the New Chat button from the close button */}
+          <div className="flex flex-col h-full pt-8">
             <div className="flex items-center justify-between p-4 border-b">
               <span className="font-semibold">Tasks</span>
               <Button 
@@ -184,7 +180,6 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
     );
   }
 
-  // Desktop sidebar
   return (
     <div
       className={cn(

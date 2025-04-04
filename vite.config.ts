@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -12,8 +11,17 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
+    {
+      name: 'html-transform',
+      transformIndexHtml(html) {
+        // Only include GPT Engineer script in development mode
+        if (mode !== 'development') {
+          return html.replace('<script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>', '');
+        }
+        return html;
+      },
+    },
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -28,16 +36,6 @@ export default defineConfig(({ mode }) => ({
           ui: ['@/components/ui/button', '@/components/ui/input'],
         },
       },
-    },
-  },
-  transformIndexHtml: {
-    enforce: 'pre',
-    transform(html, { server }) {
-      // Only include GPT Engineer script in development mode
-      if (mode !== 'development') {
-        return html.replace('<script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>', '');
-      }
-      return html;
     },
   },
 }));

@@ -9,13 +9,7 @@ import { TaskDTO } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-const fetchTasks = async (): Promise<TaskDTO[]> => {
-  console.log("Fetching tasks...");
-  const response = await httpClient.get("/api/tasks");
-  console.log("Tasks fetched:", response.data);
-  return response.data;
-};
+import { taskService } from "@/services/task.service";
 
 interface ChatSidebarProps {
   onTaskSelect: (taskId: string) => void;
@@ -27,6 +21,12 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
   const [collapsed, setCollapsed] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  // Use the query to fetch tasks
+  const { data: tasks, isLoading } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: taskService.fetchTasks
+  });
 
   useEffect(() => {
     if (isMobile && selectedTaskId) {

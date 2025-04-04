@@ -53,3 +53,18 @@ export const progressTaskWithEmptyPayload = async (taskId: string): Promise<Task
   console.log("Task progressed with empty payload:", response.data);
   return response.data;
 };
+
+const fetchTasks = async (): Promise<TaskDTO[]> => {
+  console.log("Fetching tasks...");
+  const response = await httpClient.get("/api/tasks");
+  console.log("Tasks fetched:", response.data);
+  return response.data;
+};
+
+export const taskService = {
+  createTask,
+  progressTask,
+  progressTaskWithStateData,
+  progressTaskWithEmptyPayload,
+  fetchTasks
+};

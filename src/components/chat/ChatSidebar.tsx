@@ -1,11 +1,14 @@
-import { useState } from "react";
-import { ChevronLeft, MessageSquare, PlusCircle } from "lucide-react";
+
+import { useState, useEffect } from "react";
+import { ChevronLeft, MessageSquare, PlusCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/http-client";
 import { TaskDTO } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const fetchTasks = async (): Promise<TaskDTO[]> => {
   console.log("Fetching tasks...");
@@ -22,40 +25,62 @@ interface ChatSidebarProps {
 
 export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const { data: tasks, isLoading } = useQuery({
     queryKey: ["tasks"],
     queryFn: fetchTasks,
   });
 
-  return (
-    <div
-      className={cn(
-        "h-[calc(100vh-4rem)] flex flex-col transition-all duration-300 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-r border-border",
-        collapsed ? "w-12" : "w-64"
-      )}
-    >
+  // Close sheet when task is selected on mobile
+  useEffect(() => {
+    if (isMobile && selectedTaskId) {
+      setSheetOpen(false);
+    }
+  }, [selectedTaskId, isMobile]);
+
+  const handleTaskClick = (taskId: string) => {
+    onTaskSelect(taskId);
+    if (isMobile) {
+      setSheetOpen(false);
+    }
+  };
+
+  const handleNewChat = () => {
+    if (onNewChat) {
+      onNewChat();
+      if (isMobile) {
+        setSheetOpen(false);
+      }
+    }
+  };
+
+  const sidebarContent = (
+    <>
       <div className="flex items-center justify-between p-4">
         <span className={cn("font-semibold", collapsed && "hidden")}>Tasks</span>
         <div className="flex items-center gap-2">
+          {!isMobile && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setCollapsed(!collapsed)}
+              className={cn(
+                "hover:bg-muted", 
+                collapsed && "absolute left-1/2 -translate-x-1/2 top-3"
+              )}
+            >
+              <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
+            </Button>
+          )}
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={() => setCollapsed(!collapsed)}
-            className={cn(
-              "hover:bg-muted", 
-              collapsed && "absolute left-1/2 -translate-x-1/2 top-3"
-            )}
-          >
-            <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onNewChat}
+            onClick={handleNewChat}
             className={cn(
               "hover:bg-muted",
-              collapsed && "absolute left-1/2 -translate-x-1/2 top-12"
+              collapsed && !isMobile && "absolute left-1/2 -translate-x-1/2 top-12"
             )}
           >
             <PlusCircle className="h-4 w-4" />
@@ -65,7 +90,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
       
       <div className={cn(
         "flex-1 overflow-y-auto scrollbar-hidden",
-        collapsed && "mt-20" // Reduced margin-top for better spacing
+        collapsed && !isMobile && "mt-20"
       )}>
         {isLoading ? (
           <div className="p-4 text-muted-foreground">Loading tasks...</div>
@@ -78,12 +103,12 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
               className={cn(
                 "w-full p-2 hover:bg-muted flex items-center gap-3 transition-colors",
                 selectedTaskId === task.id && "bg-muted",
-                collapsed && "justify-center" // Center icons when collapsed
+                collapsed && !isMobile && "justify-center"
               )}
-              onClick={() => onTaskSelect(task.id)}
+              onClick={() => handleTaskClick(task.id)}
             >
               <MessageSquare className="h-4 w-4 shrink-0" />
-              {!collapsed && (
+              {(!collapsed || isMobile) && (
                 <div className="text-left truncate">
                   <p className="truncate">{task.title || "Untitled Task"}</p>
                   <p className="text-xs text-muted-foreground">
@@ -95,6 +120,42 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
           ))
         )}
       </div>
+    </>
+  );
+
+  // Mobile sidebar uses Sheet component
+  if (isMobile) {
+    return (
+      <>
+        <SheetTrigger asChild onClick={() => setSheetOpen(true)}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="fixed left-4 top-16 z-40 bg-background/80 backdrop-blur-sm hover:bg-muted"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetContent side="left" className="p-0 w-[280px]">
+            <div className="flex flex-col h-full">
+              {sidebarContent}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </>
+    );
+  }
+
+  // Desktop sidebar
+  return (
+    <div
+      className={cn(
+        "h-[calc(100vh-4rem)] flex flex-col transition-all duration-300 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-r border-border",
+        collapsed ? "w-12" : "w-64"
+      )}
+    >
+      {sidebarContent}
     </div>
   );
 };

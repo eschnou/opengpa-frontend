@@ -1,3 +1,4 @@
+
 # OpenGPA - (Open) Agentic is all you need 😁
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/opengpa?style=social)](https://twitter.com/opengpa) &ensp;
@@ -27,6 +28,31 @@ If you are running OpenGPA backend on an other server, update the VITE_API_URL t
 npm install
 npm run dev
 ```
+
+## PWA Support
+
+OpenGPA is configured as a Progressive Web App (PWA), which means it can be installed on mobile devices and desktop computers.
+
+### Generating PWA Icons
+
+To generate the necessary PWA icons, follow these steps:
+
+1. **Install the Sharp library** (if you haven't already):
+   ```bash
+   npm install sharp
+   ```
+
+2. **Copy your OpenGPA logo** to the `/public/icons/` directory as `opengpa_logo.svg`
+   ```bash
+   cp public/opengpa_logo.svg public/icons/
+   ```
+
+3. **Run the icon generation script**:
+   ```bash
+   node public/icons/generate-icons.js
+   ```
+
+This will generate all the required icon sizes (72×72, 96×96, 128×128, etc.) as specified in the manifest.json file.
 
 ## Configuration
 

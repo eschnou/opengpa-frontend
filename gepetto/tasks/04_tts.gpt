@@ -1,0 +1,12 @@
+description: "Use the TTS tool"
+tags: [login, authentication]
+author: "Laurent Eschenauer"
+created: "2025-03-31"
+
+Task:
+  Navigate to ${HOSTNAME} and verify that you are logged in you see the chatbox.
+  Verify that in the bottom of the screen, the tool category selector displays the number 3.
+  Open the tool category selector and verify that the Core Tools, the Knowledge Search and the Web Search are checked.
+  Select the Speech Tools as an additional tool and close the tool category selector.
+  Input the question 'Generate an audio narration about the joy of spring' in the text area and press enter.
+  Wait for the result and verify it did generate a mp3 attachement that can be played.

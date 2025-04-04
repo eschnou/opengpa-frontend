@@ -1,0 +1,12 @@
+description: "Register in to the application"
+tags: [login, authentication]
+author: "Laurent Eschenauer"
+created: "2025-03-31"
+
+Task:
+  Navigate to ${HOSTNAME}.
+  Navigate to the signup page.
+  Signup with email johndoe@example.com, name 'John Doe', username ${USERNAME} and a password ${PASSWORD}.
+  Verify that the dashboard page is displayed.
+  Logout from the application with the last icon on the right.
+  Verify that you are back to the login screen.

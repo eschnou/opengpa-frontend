@@ -30,4 +30,14 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
+  transformIndexHtml: {
+    enforce: 'pre',
+    transform(html, { server }) {
+      // Only include GPT Engineer script in development mode
+      if (mode !== 'development') {
+        return html.replace('<script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>', '');
+      }
+      return html;
+    },
+  },
 }));

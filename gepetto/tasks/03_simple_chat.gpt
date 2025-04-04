@@ -1,0 +1,9 @@
+description: "Perform a simple chat querry"
+tags: [login, authentication]
+author: "Laurent Eschenauer"
+created: "2025-03-31"
+
+Task:
+  Navigate to ${HOSTNAME} and verify that you are logged in you see the chatbox.
+  Ask the question 'who is the king of england' and press the submit button.
+  Wait for an answer and verify it is a correct answer.

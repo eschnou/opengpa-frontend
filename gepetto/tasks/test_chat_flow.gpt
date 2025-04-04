@@ -1,0 +1,13 @@
+description: "Log in to the application with valid credentials"
+tags: [login, authentication]
+author: "Laurent Eschenauer"
+created: "2025-03-31"
+
+Task:
+  Navigate to ${HOSTNAME}.
+  Log in with username ${USERNAME} and password ${PASSWORD}.
+  Verify that the dashboard page is displayed.
+  Ask the question 'what is the weather forecast for Liège tomorrow ?' and press the submit button.
+  Wait for an answer and verify it seems a correct answer.
+  Logout from the application with the last icon on the right.
+  Verify that you are back to the login screen.

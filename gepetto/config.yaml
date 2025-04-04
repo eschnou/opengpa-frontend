@@ -1,0 +1,9 @@
+# Gepetto Configuration
+
+variables:
+  # Example variables:
+  HOSTNAME: "http://localhost:8080"
+  USERNAME: "eschnou"
+debug: false
+timeout: 30000
+logPath: gepetto/logs/

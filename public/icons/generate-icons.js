@@ -9,9 +9,14 @@
  * - Run: node generate-icons.js
  */
 
-const fs = require('fs');
-const path = require('path');
-const sharp = require('sharp');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import sharp from 'sharp';
+
+// Get the directory name using ES module approach
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
 const sourceFile = path.join(__dirname, 'opengpa_logo.svg');

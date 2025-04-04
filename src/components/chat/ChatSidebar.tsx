@@ -139,7 +139,45 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
         </SheetTrigger>
         <SheetContent side="left" className="p-0 w-[280px]">
           <div className="flex flex-col h-full">
-            {sidebarContent}
+            {/* Modified header for mobile to separate the New Chat button from the close button */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <span className="font-semibold">Tasks</span>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleNewChat}
+                className="hover:bg-muted"
+              >
+                <PlusCircle className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto scrollbar-hidden">
+              {isLoading ? (
+                <div className="p-4 text-muted-foreground">Loading tasks...</div>
+              ) : tasks?.length === 0 ? (
+                <div className="p-4 text-muted-foreground">No tasks found</div>
+              ) : (
+                tasks?.map((task) => (
+                  <button
+                    key={task.id}
+                    className={cn(
+                      "w-full p-2 hover:bg-muted flex items-center gap-3 transition-colors",
+                      selectedTaskId === task.id && "bg-muted"
+                    )}
+                    onClick={() => handleTaskClick(task.id)}
+                  >
+                    <MessageSquare className="h-4 w-4 shrink-0" />
+                    <div className="text-left truncate">
+                      <p className="truncate">{task.title || "Untitled Task"}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {task.created ? formatDistanceToNow(new Date(task.created), { addSuffix: true }) : "No date"}
+                      </p>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
           </div>
         </SheetContent>
       </Sheet>

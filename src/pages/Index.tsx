@@ -49,7 +49,7 @@ const Index = () => {
         
         {/* Chat area */}
         <div className="flex-1 relative">
-          {/* Mobile sidebar renders as an overlay */}
+          {/* Mobile sidebar is independent on mobile */}
           {isMobile && (
             <ChatSidebar 
               onTaskSelect={handleTaskSelect} 

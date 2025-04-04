@@ -126,24 +126,23 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
   // Mobile sidebar uses Sheet component
   if (isMobile) {
     return (
-      <>
-        <SheetTrigger asChild onClick={() => setSheetOpen(true)}>
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetTrigger asChild>
           <Button 
             variant="ghost" 
             size="icon" 
             className="fixed left-4 top-16 z-40 bg-background/80 backdrop-blur-sm hover:bg-muted"
+            onClick={() => setSheetOpen(true)}
           >
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetContent side="left" className="p-0 w-[280px]">
-            <div className="flex flex-col h-full">
-              {sidebarContent}
-            </div>
-          </SheetContent>
-        </Sheet>
-      </>
+        <SheetContent side="left" className="p-0 w-[280px]">
+          <div className="flex flex-col h-full">
+            {sidebarContent}
+          </div>
+        </SheetContent>
+      </Sheet>
     );
   }
 

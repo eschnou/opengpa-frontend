@@ -2,7 +2,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send, Square, Paperclip, Camera, X, Loader2 } from "lucide-react";
-import { KeyboardEvent, useRef, useEffect, ReactNode } from "react";
+import { KeyboardEvent, useRef, useEffect, ReactNode, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -44,15 +44,29 @@ export const MessageInput = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isMobile = useIsMobile();
+  const [textareaHeight, setTextareaHeight] = useState<number>(0);
 
-  // Auto-resize textarea as content changes
+  // Auto-resize textarea as content changes with better height control
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
+      // Reset height to content measurement base
       textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      
+      // Get scroll height (content height)
+      const scrollHeight = textarea.scrollHeight;
+      
+      // Set max height based on device
+      const maxHeight = isMobile ? 100 : 200;
+      
+      // Calculate new height (capped at maxHeight)
+      const newHeight = Math.min(scrollHeight, maxHeight);
+      
+      // Set the height
+      textarea.style.height = `${newHeight}px`;
+      setTextareaHeight(newHeight);
     }
-  }, [message]);
+  }, [message, isMobile]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -320,7 +334,7 @@ export const MessageInput = ({
                 onChange={(e) => onMessageChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type your message..."
-                className="resize-none pr-12 min-h-[44px] max-h-[400px] overflow-y-auto"
+                className={`resize-none pr-12 ${isMobile ? 'min-h-[40px] max-h-[100px]' : 'min-h-[44px] max-h-[200px]'} overflow-y-auto`}
                 rows={1}
                 disabled={isProcessing}
               />
@@ -345,7 +359,7 @@ export const MessageInput = ({
                 onChange={(e) => onMessageChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type your message..."
-                className="resize-none pr-12 min-h-[44px] max-h-[400px] overflow-y-auto"
+                className={`resize-none pr-12 ${isMobile ? 'min-h-[40px] max-h-[100px]' : 'min-h-[44px] max-h-[200px]'} overflow-y-auto`}
                 rows={1}
                 disabled={isProcessing}
               />

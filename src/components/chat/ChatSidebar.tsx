@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { ChevronLeft, MessageSquare, PlusCircle, Menu, ArrowLeft } from "lucide-react";
+import { ChevronLeft, MessageSquare, PlusCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -62,7 +62,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
             onClick={() => setCollapsed(true)}
             className="hover:bg-muted"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="font-medium">Tasks</div>
           <Button 
@@ -96,7 +96,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
         onClick={() => setSheetOpen(false)}
         className="hover:bg-muted"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ChevronLeft className="h-4 w-4" />
       </Button>
       <div className="font-medium">Tasks</div>
       <Button 

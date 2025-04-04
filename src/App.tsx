@@ -14,6 +14,7 @@ import DocumentDetails from "./pages/DocumentDetails";
 import { isAuthenticated } from "@/utils/token";
 import { useEffect } from "react";
 import { applyThemeColors } from "@/utils/theme";
+import { APP_CONFIG } from "@/config/app.config";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +34,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme={APP_CONFIG.defaultTheme} enableSystem>
         <TooltipProvider>
           <Toaster />
           <Sonner />

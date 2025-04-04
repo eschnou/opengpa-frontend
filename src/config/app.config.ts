@@ -14,6 +14,8 @@ export const APP_CONFIG = {
   },
   // URL for fetching chat examples
   examplesUrl: import.meta.env.VITE_EXAMPLES_URL || "",
+  // Default theme setting (light, dark, or system)
+  defaultTheme: import.meta.env.VITE_DEFAULT_THEME || "dark",
 } as const;
 
 // Type for the config to ensure type safety

@@ -10,7 +10,8 @@ import { TextToSpeechRenderer } from "./renderers/TextToSpeechRenderer";
 const STEP_RENDERERS: Record<string, React.ComponentType<{ step: TaskStepDTO }>> = {
   search_web: SearchWebRenderer,
   browse_web: DefaultRenderer,
-  output_message: OutputMessageRenderer,
+  ask_question: OutputMessageRenderer,
+  complete_task: OutputMessageRenderer,
   send_email: SendEmailRenderer,
   rag_search: RagSearchRenderer,
   text_to_speech: TextToSpeechRenderer,

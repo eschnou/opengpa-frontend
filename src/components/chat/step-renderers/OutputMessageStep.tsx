@@ -24,7 +24,7 @@ export const OutputMessageStep = ({ step, isSelected, onStepClick }: OutputMessa
       onClick={onStepClick}
     >
       <div className="prose prose-sm max-w-none dark:prose-invert">
-        <MarkdownContent content={step.action.parameters?.message || step.result?.details || ''} />
+        <MarkdownContent content={step.action.parameters?.message || step.action.parameters?.result || step.result?.details || ''} />
       </div>
       
       {step.result?.error && (

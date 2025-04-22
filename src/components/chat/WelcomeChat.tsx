@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ChatInput } from "./ChatInput";
 import { useExamples } from "@/hooks/useExamples";
@@ -46,7 +45,7 @@ export const WelcomeChat = ({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">
         {isAnalyzeApp
           ? "Welcome to the Document Analyzer!"
           : `Welcome to ${selectedAgent.name}!`}

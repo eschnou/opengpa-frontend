@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ChevronLeft, MessageSquare, PlusCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,10 +21,9 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
   const isMobile = useIsMobile();
   const { selectedAgent } = useAgent();
 
-  // Use the query to fetch tasks - fix: do not pass arguments if not required
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ['tasks', selectedAgent.id], // Keep agent.id in the key for cache separation
-    queryFn: () => taskService.fetchTasks() // <-- removed argument here
+    queryKey: ['tasks', selectedAgent.id],
+    queryFn: () => taskService.fetchTasks()
   });
 
   useEffect(() => {
@@ -50,7 +48,8 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
     }
   };
 
-  // Desktop sidebar header
+  const sidebarTitle = selectedAgent.id === "analyze" ? "Analysis" : "Tasks";
+
   const desktopSidebarHeader = (
     <div className={cn(
       "flex items-center justify-between p-3 border-b",
@@ -66,7 +65,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <div className="font-medium">Tasks</div>
+          <div className="font-medium">{sidebarTitle}</div>
           <Button 
             variant="ghost" 
             size="icon"
@@ -89,7 +88,6 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
     </div>
   );
 
-  // Mobile sidebar header
   const mobileSidebarHeader = (
     <div className="flex items-center justify-between p-3 border-b">
       <Button 
@@ -100,7 +98,7 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <div className="font-medium">Tasks</div>
+      <div className="font-medium">{sidebarTitle}</div>
       <Button 
         variant="ghost" 
         size="icon"

@@ -17,7 +17,7 @@ import { applyThemeColors } from "@/utils/theme";
 import { APP_CONFIG } from "@/config/app.config";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { AgentMenu } from "@/components/AgentMenu";
-import TopNav from "@/components/layout/TopNav"; // <-- Fix: import TopNav
+import { TopNav } from "@/components/layout/TopNav"; // <-- Fixed: use named import
 
 const queryClient = new QueryClient();
 

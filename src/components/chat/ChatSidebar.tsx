@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ChevronLeft, MessageSquare, PlusCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ interface ChatSidebarProps {
 export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(); // <-- Correct usage, no arguments
   const { selectedAgent } = useAgent();
 
   // Use the query to fetch agent-specific tasks

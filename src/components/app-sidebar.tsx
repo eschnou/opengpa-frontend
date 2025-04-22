@@ -10,28 +10,28 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Translate, Analyse, Search, Plus } from "lucide-react";
+import { Book, Activity, Search, Plus } from "lucide-react"; // use existing icons
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-// Simple local mapping for icons, can be extended as needed
+// Use available lucide icons
 const apps = [
   {
     key: "translate",
     title: "Translate",
-    icon: Translate
+    icon: Book, // book icon for Translate
   },
   {
     key: "analyse",
     title: "Analyse",
-    icon: Analyse
+    icon: Activity, // activity icon for Analyse
   },
   {
     key: "research",
     title: "Research",
-    icon: Search
-  }
+    icon: Search, // search icon for Research
+  },
 ];
 
 export function AppSidebar() {

@@ -19,8 +19,7 @@ interface ChatSidebarProps {
 export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  // Correct usage: useIsMobile should be called with no arguments
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(); // Correct usage: no arguments
   const { selectedAgent } = useAgent();
 
   // Use the query to fetch agent-specific tasks

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { ChatInput } from "./ChatInput";
 import { useExamples } from "@/hooks/useExamples";
@@ -117,20 +118,24 @@ export const WelcomeChat = ({
           )}
         </div>
       </div>
-      <div className="w-full">
-        <ChatInput
-          message={message}
-          isProcessing={isProcessing}
-          onMessageChange={onMessageChange}
-          onSendMessage={onSendMessage}
-          onStopProcessing={() => {}}
-          attachedFiles={attachedFiles}
-          onFileAttach={onFileAttach}
-          isNewTask={isNewTask}
-          selectedCategories={selectedCategories}
-          onCategoriesChange={onCategoriesChange}
-        />
-      </div>
+      {/* Hide ChatInput for Document Analyzer on new chat */}
+      {!isAnalyzeApp && (
+        <div className="w-full">
+          <ChatInput
+            message={message}
+            isProcessing={isProcessing}
+            onMessageChange={onMessageChange}
+            onSendMessage={onSendMessage}
+            onStopProcessing={() => {}}
+            attachedFiles={attachedFiles}
+            onFileAttach={onFileAttach}
+            isNewTask={isNewTask}
+            selectedCategories={selectedCategories}
+            onCategoriesChange={onCategoriesChange}
+          />
+        </div>
+      )}
     </div>
   );
 };
+

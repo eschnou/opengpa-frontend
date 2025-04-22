@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { APP_CONFIG } from "@/config/app.config";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AgentMenu } from "@/components/AgentMenu"; // <--- Import AgentMenu
+import { AgentMenu } from "@/components/AgentMenu";
 
 export const TopNav = () => {
   const navigate = useNavigate();
@@ -27,8 +27,8 @@ export const TopNav = () => {
   return (
     <nav className="glass fixed top-0 left-0 right-0 h-16 px-4 flex items-center justify-between z-50">
       <div className="flex items-center gap-2">
-        <AgentMenu /> {/* <-- Show agent/application switcher at top left */}
         <img src={APP_CONFIG.branding.navbarLogo} alt={`${APP_CONFIG.branding.appName} Logo`} className="h-8 w-8" />
+        <AgentMenu />
         {!isMobile && (
           <span className="font-semibold text-lg text-primary">{APP_CONFIG.branding.appName}</span>
         )}

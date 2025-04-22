@@ -19,13 +19,13 @@ interface ChatSidebarProps {
 export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const isMobile = useIsMobile(); // Correct usage: no arguments
+  const isMobile = useIsMobile();
   const { selectedAgent } = useAgent();
 
-  // Use the query to fetch agent-specific tasks
+  // Use the query to fetch tasks - fix: do not pass arguments if not required
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ['tasks', selectedAgent.id],
-    queryFn: () => taskService.fetchTasks(selectedAgent.id)
+    queryKey: ['tasks', selectedAgent.id], // Keep agent.id in the key for cache separation
+    queryFn: () => taskService.fetchTasks() // <-- removed argument here
   });
 
   useEffect(() => {

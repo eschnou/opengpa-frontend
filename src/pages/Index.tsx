@@ -5,8 +5,6 @@ import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { TopNav } from "@/components/layout/TopNav";
 import { TaskStepDTO } from "@/types/api";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
 
 const Index = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<string>();
@@ -32,51 +30,43 @@ const Index = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex flex-col h-screen w-full">
-        {/* Fixed top navigation */}
-        <div className="flex-none">
-          <TopNav />
-        </div>
-        {/* Scrollable content area */}
-        <div className="flex flex-1 overflow-hidden pt-16">
-          {/* Left App menu bar */}
-          {!isMobile && (
-            <div className="flex-none">
-              <AppSidebar />
-            </div>
-          )}
-
-          {/* Chat sidebar only on desktop */}
-          {!isMobile && (
-            <ChatSidebar
-              onTaskSelect={handleTaskSelect}
+    <div className="flex flex-col h-screen">
+      {/* Fixed top navigation */}
+      <div className="flex-none">
+        <TopNav />
+      </div>
+      
+      {/* Scrollable content area */}
+      <div className="flex flex-1 overflow-hidden pt-16">
+        {/* Sidebar only renders as regular component on desktop */}
+        {!isMobile && (
+          <ChatSidebar 
+            onTaskSelect={handleTaskSelect} 
+            selectedTaskId={selectedTaskId}
+            onNewChat={handleNewChat}
+          />
+        )}
+        
+        {/* Chat area */}
+        <div className="flex-1 relative">
+          {/* Mobile sidebar is independent on mobile */}
+          {isMobile && (
+            <ChatSidebar 
+              onTaskSelect={handleTaskSelect} 
               selectedTaskId={selectedTaskId}
               onNewChat={handleNewChat}
             />
           )}
-
-          {/* Chat area */}
-          <div className="flex-1 relative">
-            {/* Mobile sidebars */}
-            {isMobile && (
-              <ChatSidebar
-                onTaskSelect={handleTaskSelect}
-                selectedTaskId={selectedTaskId}
-                onNewChat={handleNewChat}
-              />
-            )}
-
-            <ChatArea
-              taskId={selectedTaskId}
-              onTaskCreated={handleTaskCreated}
-              selectedStep={selectedStep}
-              onStepSelect={setSelectedStep}
-            />
-          </div>
+          
+          <ChatArea 
+            taskId={selectedTaskId} 
+            onTaskCreated={handleTaskCreated}
+            selectedStep={selectedStep}
+            onStepSelect={setSelectedStep}
+          />
         </div>
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 

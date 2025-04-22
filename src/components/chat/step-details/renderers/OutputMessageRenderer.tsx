@@ -1,7 +1,6 @@
 
 import { TaskStepDTO } from "@/types/api";
 import { MarkdownContent } from "../../step-renderers/MarkdownContent";
-import ReactMarkdown from "react-markdown";
 
 export const OutputMessageRenderer = ({ step }: { step: TaskStepDTO }) => {
   return (
@@ -19,17 +18,7 @@ export const OutputMessageRenderer = ({ step }: { step: TaskStepDTO }) => {
         <div className="mt-4">
           <h4 className="text-sm font-medium mb-2 text-muted-foreground">Details</h4>
           <div className="bg-muted rounded-lg p-4 prose prose-sm max-w-none dark:prose-invert">
-            <ReactMarkdown
-                components={{
-                  a: ({ node, ...props }) => (
-                      <a {...props} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/90" />
-                  ),
-                }}
-            >
-              {typeof step.result.details === 'string'
-                  ? step.result.details
-                  : step.result.details.result}
-            </ReactMarkdown>
+            <MarkdownContent content={step.result.details} />
           </div>
         </div>
       )}

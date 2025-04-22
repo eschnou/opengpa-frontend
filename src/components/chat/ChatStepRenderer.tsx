@@ -53,18 +53,18 @@ export const ChatStepRenderer = ({
       )}
 
       {/* Output message step */}
-      {(step.action?.name === "ask_question" || step.action?.name === "complete_task") ? (
-          <OutputMessageStep
-              step={step}
-              isSelected={isSelected}
-              onStepClick={onStepClick}
-          />
+      {step.action?.name === "output_message" ? (
+        <OutputMessageStep 
+          step={step} 
+          isSelected={isSelected} 
+          onStepClick={onStepClick} 
+        />
       ) : (
-          <ActionResultStep
-              step={step}
-              isSelected={isSelected}
-              onStepClick={onStepClick}
-          />
+        <ActionResultStep 
+          step={step} 
+          isSelected={isSelected} 
+          onStepClick={onStepClick} 
+        />
       )}
 
       {/* Documents section */}

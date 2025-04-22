@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,11 +16,10 @@ import { applyThemeColors } from "@/utils/theme";
 import { APP_CONFIG } from "@/config/app.config";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { AgentMenu } from "@/components/AgentMenu";
-import { TopNav } from "@/components/layout/TopNav"; // <-- Fixed: use named import
+import { TopNav } from "@/components/layout/TopNav";
 
 const queryClient = new QueryClient();
 
-// Protected Route wrapper component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
@@ -30,7 +28,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
-  // Apply theme colors when the app initializes
   useEffect(() => {
     applyThemeColors();
   }, []);
@@ -48,15 +45,7 @@ const App = () => {
                   path="/"
                   element={
                     <ProtectedRoute>
-                      <div className="flex flex-col h-screen">
-                        <div className="flex-none flex items-center h-16 px-2 border-b bg-background z-30">
-                          <AgentMenu />
-                          <div className="flex-1">
-                            <TopNav />
-                          </div>
-                        </div>
-                        <Index />
-                      </div>
+                      <Index />
                     </ProtectedRoute>
                   }
                 />
@@ -97,4 +86,3 @@ const App = () => {
 };
 
 export default App;
-

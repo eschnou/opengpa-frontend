@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ChatInput } from "./ChatInput";
 import { useExamples } from "@/hooks/useExamples";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { APP_CONFIG } from "@/config/app.config";
 import { Loader2 } from "lucide-react";
+import { Agent } from "@/contexts/AgentContext";
 
 interface WelcomeChatProps {
   message: string;
@@ -18,6 +18,7 @@ interface WelcomeChatProps {
   isNewTask?: boolean;
   selectedCategories?: string[];
   onCategoriesChange?: (categories: string[]) => void;
+  selectedAgent: Agent;
 }
 
 export const WelcomeChat = ({
@@ -30,7 +31,8 @@ export const WelcomeChat = ({
   onFileAttach,
   isNewTask = true,
   selectedCategories = [],
-  onCategoriesChange
+  onCategoriesChange,
+  selectedAgent,
 }: WelcomeChatProps) => {
   const {
     examples,
@@ -39,10 +41,12 @@ export const WelcomeChat = ({
   } = useExamples();
 
   return (
-    <div className="flex flex-col h-full">
+    <div>
+      <h1 className="text-2xl font-bold mb-4">
+        {`Welcome to ${selectedAgent.name}!`}
+      </h1>
       <div className="flex-1 flex flex-col justify-center items-center pb-10">
         <div className="text-center space-y-6 max-w-3xl mx-auto px-4">
-          <h1 className="text-4xl font-bold tracking-tight">{APP_CONFIG.branding.appName}</h1>
           <p className="text-xl text-muted-foreground">Here are some examples of what you can ask:</p>
 
           {isLoading ? (

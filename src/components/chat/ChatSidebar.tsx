@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ChevronLeft, MessageSquare, PlusCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { taskService } from "@/services/task.service";
+import { useAgent } from "@/contexts/AgentContext";
 
 interface ChatSidebarProps {
   onTaskSelect: (taskId: string) => void;
@@ -19,11 +19,12 @@ export const ChatSidebar = ({ onTaskSelect, selectedTaskId, onNewChat }: ChatSid
   const [collapsed, setCollapsed] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { selectedAgent } = useAgent();
 
-  // Use the query to fetch tasks
+  // Use the query to fetch agent-specific tasks
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: taskService.fetchTasks
+    queryKey: ['tasks', selectedAgent.id],
+    queryFn: () => taskService.fetchTasks(selectedAgent.id)
   });
 
   useEffect(() => {

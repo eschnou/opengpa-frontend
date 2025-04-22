@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { ChatStepRenderer } from "./ChatStepRenderer";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -9,20 +8,21 @@ import { TaskStepDTO } from "@/types/api";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { StepDetails } from "./StepDetails";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Agent } from "@/contexts/AgentContext";
 
 interface ChatAreaProps {
   taskId?: string;
   onTaskCreated?: (taskId: string) => void;
   selectedStep: TaskStepDTO | null;
   onStepSelect: (step: TaskStepDTO | null) => void;
+  selectedAgent: Agent;
 }
 
-export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: ChatAreaProps) => {
+export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect, selectedAgent }: ChatAreaProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const [displayStep, setDisplayStep] = useState<TaskStepDTO | null>(null);
   
-  // Update displayStep when selectedStep changes
   useEffect(() => {
     setDisplayStep(selectedStep);
   }, [selectedStep]);
@@ -77,6 +77,7 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
               isNewTask={true}
               selectedCategories={enabledCategories}
               onCategoriesChange={handleCategoriesChange}
+              selectedAgent={selectedAgent}
             />
           </div>
         </div>
@@ -133,7 +134,6 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     </div>
   );
 
-  // For mobile view, we use a drawer instead of resizable panels
   if (isMobile) {
     return (
       <div className="flex flex-col h-full w-full">
@@ -152,7 +152,6 @@ export const ChatArea = ({ taskId, onTaskCreated, selectedStep, onStepSelect }: 
     );
   }
 
-  // Desktop view with resizable panels
   if (!selectedStep) {
     return (
       <div className="flex flex-col h-full w-full">

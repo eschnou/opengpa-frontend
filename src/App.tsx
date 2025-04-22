@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +17,7 @@ import { applyThemeColors } from "@/utils/theme";
 import { APP_CONFIG } from "@/config/app.config";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { AgentMenu } from "@/components/AgentMenu";
+import TopNav from "@/components/layout/TopNav"; // <-- Fix: import TopNav
 
 const queryClient = new QueryClient();
 
@@ -95,3 +97,4 @@ const App = () => {
 };
 
 export default App;
+

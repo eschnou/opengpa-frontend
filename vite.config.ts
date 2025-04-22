@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -14,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' && componentTagger(),
     {
       name: 'html-transform',
-      transformIndexHtml(html) {
+      transformIndexHtml(html: string) {
         // Only include GPT Engineer script in development mode
         if (mode !== 'development') {
           return html.replace('<script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>', '');

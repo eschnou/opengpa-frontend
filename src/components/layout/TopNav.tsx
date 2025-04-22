@@ -27,9 +27,15 @@ export const TopNav = () => {
   return (
     <nav className="glass fixed top-0 left-0 right-0 h-16 px-4 flex items-center justify-between z-50">
       <div className="flex items-center gap-2">
-        <img src={APP_CONFIG.branding.navbarLogo} alt={`${APP_CONFIG.branding.appName} Logo`} className="h-8 w-8" />
+        <img 
+          src={APP_CONFIG.branding.navbarLogo} 
+          alt={`${APP_CONFIG.branding.appName} Logo`} 
+          className="h-8 w-8"
+        />
         {!isMobile && (
-          <span className="font-semibold text-lg text-primary">{APP_CONFIG.branding.appName}</span>
+          <span className="font-semibold text-lg text-primary">
+            {APP_CONFIG.branding.appName}
+          </span>
         )}
         <AgentMenu />
       </div>
